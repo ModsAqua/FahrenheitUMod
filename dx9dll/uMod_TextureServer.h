@@ -142,13 +142,6 @@ private:
   int ShowSingleTexture(bool val); // called from Mainloop()
 
   /**
-   * Enable/Disable the hashing with CRC32, which is needed to support tpf mods (called from the mainloop).
-   * @param[in] val
-   * @return
-   */
-  int SupportTPF(bool val); // called from Mainloop()
-
-  /**
    * Set saving directory (called from the mainloop).
    * @param[in] dir
    * @return
@@ -257,7 +250,6 @@ private:
   bool BoolSaveSingleTexture;
   bool BoolShowTextureString;
   bool BoolShowSingleTexture;
-  bool BoolSupportTPF;
 
   wchar_t SavePath[MAX_PATH];
   wchar_t GameName[MAX_PATH];

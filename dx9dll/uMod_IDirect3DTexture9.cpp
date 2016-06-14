@@ -240,7 +240,7 @@ HRESULT APIENTRY uMod_IDirect3DTexture9::AddDirtyRect(CONST RECT* pDirtyRect)
 }
 
 
-int uMod_IDirect3DTexture9::ComputetHash( bool compute_crc)
+int uMod_IDirect3DTexture9::ComputetHash()
 {
   if (FAKE) return (RETURN_BAD_ARGUMENT);
   IDirect3DTexture9 *pTexture = m_D3Dtex;
@@ -254,9 +254,8 @@ int uMod_IDirect3DTexture9::ComputetHash( bool compute_crc)
     return (RETURN_LockRect_FAILED);
   }
 
-  if (compute_crc) InitCRC32(CRC32);
   InitCRC64(CRC64);
-  ((uMod_IDirect3DDevice9*)(m_D3Ddev))->ComputetHash( CRC64, CRC32, surface, compute_crc);
+  ((uMod_IDirect3DDevice9*)(m_D3Ddev))->ComputetHash( CRC64, surface);
 
   surface->Release();
   return (RETURN_OK);

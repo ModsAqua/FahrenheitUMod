@@ -28,7 +28,6 @@ uMod_TextureClient::uMod_TextureClient(const int version) : Version(version)
   BoolSaveAllTextures = false;
   BoolSaveSingleTexture = false;
   BoolShowTextureString = false;
-  BoolComputeCRC = false;
 
   KeyBack = 0;
   KeySave = 0;

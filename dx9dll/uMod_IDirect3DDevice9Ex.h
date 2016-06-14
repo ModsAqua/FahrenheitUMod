@@ -194,7 +194,7 @@ public:
   uMod_IDirect3DVolumeTexture9* GetSingleVolumeTexture(void) {return (SingleVolumeTexture);}
   uMod_IDirect3DCubeTexture9* GetSingleCubeTexture(void) {return (SingleCubeTexture);}
 
-  int ComputetHash( DWORD64 &CRC64, DWORD32 &CRC32, IDirect3DSurface9 *surface, bool compute_crc);
+  int ComputetHash( DWORD64 &CRC64, IDirect3DSurface9 *surface);
 
 
 

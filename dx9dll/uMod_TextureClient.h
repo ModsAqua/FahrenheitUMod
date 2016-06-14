@@ -75,13 +75,6 @@ public:
   int ShowSingleTexture(bool val) {BoolShowSingleTexture = val; return (RETURN_OK);}
 
   /**
-   * Enable/Disable the hashing with CRC32, which is needed to support also tpf mods (called from the mainloop).
-   * @param[in] val
-   * @return
-   */
-  int SupportTPF(bool val) {BoolComputeCRC = val; return (RETURN_OK);}
-
-  /**
    * Set the directory, wher the texture should be stored (called from the server)
    * @param dir
    * @return RETURN_OK on success
@@ -178,7 +171,6 @@ public:
   bool BoolSaveSingleTexture; //!< true if "save single texture" mode is enabled
   bool BoolShowTextureString; //!< true if a string should be displayed during "save single texture" mode is enabled
   bool BoolShowSingleTexture; //!< true if the texture should be displayed during "save single texture" mode is enabled
-  bool BoolComputeCRC; //!< if true also the crc32 is calculated, which is need to support tpf
 
   int KeyBack; //!< key value for going to the previous texture
   int KeySave; //!< key value for saving the current texture

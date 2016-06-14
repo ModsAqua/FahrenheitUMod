@@ -84,7 +84,7 @@ public:
     STDMETHOD(UnlockRect)(UINT Level);
     STDMETHOD(AddDirtyRect)(CONST RECT* pDirtyRect);
 
-    int ComputetHash( bool compute_crc);
+    int ComputetHash();
 };
 
 

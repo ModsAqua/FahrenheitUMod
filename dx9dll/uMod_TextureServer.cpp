@@ -33,7 +33,6 @@ uMod_TextureServer::uMod_TextureServer(wchar_t *game)
   BoolSaveSingleTexture = false;
   BoolShowTextureString = false;
   BoolShowSingleTexture = false;
-  BoolSupportTPF = false;
 
   SavePath[0] = 0;
 
@@ -118,7 +117,6 @@ int uMod_TextureServer::AddClient(uMod_TextureClient *client, TextureFileStruct*
   client->SaveSingleTexture(BoolSaveSingleTexture);
   client->ShowTextureString(BoolShowTextureString);
   client->ShowSingleTexture(BoolShowSingleTexture);
-  client->SupportTPF(BoolSupportTPF);
   client->SetSaveDirectory(SavePath);
 
   client->SetKeyBack(KeyBack);
@@ -363,23 +361,6 @@ int uMod_TextureServer::ShowSingleTexture(bool val) // called from Mainloop()
   for (int i = 0; i < NumberOfClients; i++)
   {
     Clients[i]->ShowSingleTexture(BoolShowSingleTexture);
-  }
-  return (UnlockMutex());
-}
-
-int uMod_TextureServer::SupportTPF(bool val) // called from Mainloop()
-{
-  if (BoolSupportTPF == val) return (RETURN_OK);
-  BoolSupportTPF = val;
-
-  if (int ret = LockMutex())
-  {
-    gl_ErrorState |= uMod_ERROR_SERVER;
-    return (ret);
-  }
-  for (int i = 0; i < NumberOfClients; i++)
-  {
-    Clients[i]->SupportTPF(BoolSupportTPF);
   }
   return (UnlockMutex());
 }
@@ -789,13 +770,6 @@ int uMod_TextureServer::MainLoop(void) // run as a separated thread
           Message("MainLoop: CONTROL_SHOW_TEXTURE (%#llX): %p\n", commands->Value, this);
           if (commands->Value == 0) ShowSingleTexture(false);
           else ShowSingleTexture(true);
-          break;
-        }
-        case CONTROL_SUPPORT_TPF:
-        {
-          Message("MainLoop: CONTROL_SUPPORT_TPF (%#llX): %p\n", commands->Value, this);
-          if (commands->Value == 0) SupportTPF(false);
-          else SupportTPF(true);
           break;
         }
         case CONTROL_SET_DIR:

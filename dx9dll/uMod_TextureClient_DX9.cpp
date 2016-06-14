@@ -47,7 +47,7 @@ int uMod_TextureClient_DX9::AddTexture( uMod_IDirect3DTexture9* pTexture)
 
   Message("uMod_TextureClient_DX9::AddTexture( %p): %p (thread: %lu)\n", pTexture, this, GetCurrentThreadId());
 
-  if (int ret = pTexture->ComputetHash( BoolComputeCRC))
+  if (int ret = pTexture->ComputetHash())
   {
     Bool_CheckAgainNonAdded = true;
     NonAdded_OriginalTextures.Add( pTexture);
@@ -74,7 +74,7 @@ int uMod_TextureClient_DX9::AddTexture( uMod_IDirect3DVolumeTexture9* pTexture)
 
   Message("uMod_TextureClient_DX9::AddTexture( Volume: %p): %p (thread: %lu)\n", pTexture, this, GetCurrentThreadId());
 
-  if (int ret = pTexture->ComputetHash( BoolComputeCRC))
+  if (int ret = pTexture->ComputetHash())
   {
     Bool_CheckAgainNonAdded = true;
     NonAdded_OriginalVolumeTextures.Add( pTexture);
@@ -101,7 +101,7 @@ int uMod_TextureClient_DX9::AddTexture( uMod_IDirect3DCubeTexture9* pTexture)
 
   Message("uMod_TextureClient_DX9::AddTexture( Cube: %p): %p (thread: %lu)\n", pTexture, this, GetCurrentThreadId());
 
-  if (int ret = pTexture->ComputetHash( BoolComputeCRC))
+  if (int ret = pTexture->ComputetHash())
   {
     Bool_CheckAgainNonAdded = true;
     NonAdded_OriginalCubeTextures.Add( pTexture);
@@ -130,7 +130,7 @@ int uMod_TextureClient_DX9::CheckAgainNonAdded(void)
   {
     uMod_IDirect3DTexture9* pTexture = NonAdded_OriginalTextures[i];
 
-    if (pTexture->ComputetHash( BoolComputeCRC) == RETURN_OK)
+    if (pTexture->ComputetHash() == RETURN_OK)
     {
       NonAdded_OriginalTextures.Remove(pTexture);
       if (BoolSaveAllTextures) SaveTexture(pTexture, true);
@@ -144,7 +144,7 @@ int uMod_TextureClient_DX9::CheckAgainNonAdded(void)
   {
     uMod_IDirect3DVolumeTexture9* pTexture = NonAdded_OriginalVolumeTextures[i];
 
-    if (pTexture->ComputetHash( BoolComputeCRC) == RETURN_OK)
+    if (pTexture->ComputetHash() == RETURN_OK)
     {
       NonAdded_OriginalVolumeTextures.Remove(pTexture);
       if (BoolSaveAllTextures) SaveTexture(pTexture, true);
@@ -158,7 +158,7 @@ int uMod_TextureClient_DX9::CheckAgainNonAdded(void)
   {
     uMod_IDirect3DCubeTexture9* pTexture = NonAdded_OriginalCubeTextures[i];
 
-    if (pTexture->ComputetHash( BoolComputeCRC) == RETURN_OK)
+    if (pTexture->ComputetHash() == RETURN_OK)
     {
       NonAdded_OriginalCubeTextures.Remove(pTexture);
       if (BoolSaveAllTextures) SaveTexture(pTexture, true);
@@ -762,31 +762,6 @@ int uMod_TextureClient_DX9::LookUpToMod( uMod_IDirect3DTexture9* pTexture, int n
       fake_Texture->Reference = index;
     }
   }
-  else if (BoolComputeCRC &&  pTexture->CRC32>0)
-  {
-    index = GetIndex( pTexture->CRC32, num_index_list, index_list);
-    if (index>=0)
-    {
-      uMod_IDirect3DTexture9 *fake_Texture;
-      if (int ret = LoadTexture( & (FileToMod[index]), &fake_Texture)) return (ret);
-      if (SwitchTextures( fake_Texture, pTexture))
-      {
-        Message("uMod_TextureClient_DX9::LookUpToMod(): textures not switched %#llX\n", FileToMod[index].Hash);
-        fake_Texture->Release();
-      }
-      else
-      {
-        IDirect3DBaseTexture9 **temp = new IDirect3DBaseTexture9*[FileToMod[index].NumberOfTextures+1];
-        for (int j=0; j<FileToMod[index].NumberOfTextures; j++) temp[j] =  (IDirect3DBaseTexture9*) FileToMod[index].Textures[j];
-
-        if (FileToMod[index].Textures!=NULL) delete [] FileToMod[index].Textures;
-        FileToMod[index].Textures = (void**) temp;
-
-        FileToMod[index].Textures[FileToMod[index].NumberOfTextures++] = fake_Texture;
-        fake_Texture->Reference = index;
-      }
-    }
-  }
   return (RETURN_OK);
 }
 
@@ -816,31 +791,6 @@ int uMod_TextureClient_DX9::LookUpToMod( uMod_IDirect3DVolumeTexture9* pTexture,
       fake_Texture->Reference = index;
     }
   }
-  else if (BoolComputeCRC &&  pTexture->CRC32>0)
-  {
-    index = GetIndex( pTexture->CRC32, num_index_list, index_list);
-    if (index>=0)
-    {
-      uMod_IDirect3DVolumeTexture9 *fake_Texture;
-      if (int ret = LoadTexture( & (FileToMod[index]), &fake_Texture)) return (ret);
-      if (SwitchTextures( fake_Texture, pTexture))
-      {
-        Message("uMod_TextureClient_DX9::LookUpToMod(): textures not switched %#llX\n", FileToMod[index].Hash);
-        fake_Texture->Release();
-      }
-      else
-      {
-        IDirect3DBaseTexture9 **temp = new IDirect3DBaseTexture9*[FileToMod[index].NumberOfTextures+1];
-        for (int j=0; j<FileToMod[index].NumberOfTextures; j++) temp[j] =  (IDirect3DBaseTexture9*) FileToMod[index].Textures[j];
-
-        if (FileToMod[index].Textures!=NULL) delete [] FileToMod[index].Textures;
-        FileToMod[index].Textures = (void**) temp;
-
-        FileToMod[index].Textures[FileToMod[index].NumberOfTextures++] = fake_Texture;
-        fake_Texture->Reference = index;
-      }
-    }
-  }
   return (RETURN_OK);
 }
 
@@ -868,31 +818,6 @@ int uMod_TextureClient_DX9::LookUpToMod( uMod_IDirect3DCubeTexture9* pTexture, i
 
       FileToMod[index].Textures[FileToMod[index].NumberOfTextures++] = fake_Texture;
       fake_Texture->Reference = index;
-    }
-  }
-  else if (BoolComputeCRC &&  pTexture->CRC32>0)
-  {
-    index = GetIndex( pTexture->CRC32, num_index_list, index_list);
-    if (index>=0)
-    {
-      uMod_IDirect3DCubeTexture9 *fake_Texture;
-      if (int ret = LoadTexture( & (FileToMod[index]), &fake_Texture)) return (ret);
-      if (SwitchTextures( fake_Texture, pTexture))
-      {
-        Message("uMod_TextureClient_DX9::LookUpToMod(): textures not switched %#llX\n", FileToMod[index].Hash);
-        fake_Texture->Release();
-      }
-      else
-      {
-        IDirect3DBaseTexture9 **temp = new IDirect3DBaseTexture9*[FileToMod[index].NumberOfTextures+1];
-        for (int j=0; j<FileToMod[index].NumberOfTextures; j++) temp[j] =  (IDirect3DBaseTexture9*) FileToMod[index].Textures[j];
-
-        if (FileToMod[index].Textures!=NULL) delete [] FileToMod[index].Textures;
-        FileToMod[index].Textures = (void**) temp;
-
-        FileToMod[index].Textures[FileToMod[index].NumberOfTextures++] = fake_Texture;
-        fake_Texture->Reference = index;
-      }
     }
   }
   return (RETURN_OK);

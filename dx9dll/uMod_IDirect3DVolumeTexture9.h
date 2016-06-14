@@ -85,7 +85,7 @@ public:
     STDMETHOD(UnlockBox)(UINT Level);
 
 
-    int ComputetHash( bool compute_crc);
+    int ComputetHash();
 };
 
 

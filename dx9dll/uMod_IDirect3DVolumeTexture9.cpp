@@ -239,14 +239,12 @@ HRESULT APIENTRY uMod_IDirect3DVolumeTexture9::UnlockBox(UINT Level)
 }
 
 
-int uMod_IDirect3DVolumeTexture9::ComputetHash( bool compute_crc)
+int uMod_IDirect3DVolumeTexture9::ComputetHash()
 {
   if (FAKE) return (RETURN_BAD_ARGUMENT);
   IDirect3DVolumeTexture9 *pTexture = m_D3Dtex;
   if (CrossRef_D3Dtex!=NULL) pTexture = CrossRef_D3Dtex->m_D3Dtex;
 
-  //IDirect3DVolume9  *pOffscreenSurface = NULL;
-  //IDirect3DVolumeTexture9 *pOffscreenTexture = NULL;
   IDirect3DVolume9  *pResolvedSurface = NULL;
   D3DLOCKED_BOX d3dlr;
   D3DVOLUME_DESC desc;
@@ -310,12 +308,6 @@ int uMod_IDirect3DVolumeTexture9::ComputetHash( bool compute_crc)
     }
   }
 
-  if (compute_crc)
-  {
-    InitCRC32(CRC32);
-    int size = (bits_per_pixel * desc.Width*desc.Height*desc.Depth)/8;
-    GetCRC32( CRC32, (unsigned char*) d3dlr.pBits, size); //calculate the crc32 of the texture
-  }
 
 
   if (pResolvedSurface!=NULL)
@@ -325,6 +317,6 @@ int uMod_IDirect3DVolumeTexture9::ComputetHash( bool compute_crc)
   }
   else pTexture->UnlockBox(0);
 
-  Message("uMod_IDirect3DVolumeTexture9::GetHash() %#llX %#LX (%d %d %d) %d\n", CRC64, CRC32, desc.Width, desc.Height, desc.Depth, desc.Format);
+  Message("uMod_IDirect3DVolumeTexture9::GetHash() %#llX (%d %d %d) %d\n", CRC64, desc.Width, desc.Height, desc.Depth, desc.Format);
   return (RETURN_OK);
 }

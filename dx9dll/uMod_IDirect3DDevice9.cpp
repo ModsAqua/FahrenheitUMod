@@ -153,7 +153,7 @@ int uMod_IDirect3DDevice9::CreateSingleTexture(void)
 
 
 
-int uMod_IDirect3DDevice9::ComputetHash( DWORD64 &CRC64, DWORD32 &CRC32, IDirect3DSurface9 *surface, bool compute_crc)
+int uMod_IDirect3DDevice9::ComputetHash( DWORD64 &CRC64, IDirect3DSurface9 *surface)
 {
 
   IDirect3DSurface9 *offscreen_surface = NULL;
@@ -280,12 +280,6 @@ int uMod_IDirect3DDevice9::ComputetHash( DWORD64 &CRC64, DWORD32 &CRC32, IDirect
       data += pitch;
     }
   }
-  if (compute_crc)
-  {
-    if (bits_per_pixel==0) bits_per_pixel = GetBitsFromFormat( desc.Format);
-    int size = (bits_per_pixel * desc.Width*desc.Height)/8;
-    GetCRC32( CRC32, buffer, size); //calculate the crc32 of the texture
-  }
 
   if (offscreen_surface!=NULL)
   {
@@ -301,7 +295,7 @@ int uMod_IDirect3DDevice9::ComputetHash( DWORD64 &CRC64, DWORD32 &CRC32, IDirect
     surface->ReleaseDC( (HDC) buffer);
   }
 
-  Message("ComputetHash() %#llX %#LX (%d %d) %d\n", CRC64, CRC32, desc.Width, desc.Height, desc.Format);
+  Message("ComputetHash() %#llX (%d %d) %d\n", CRC64, desc.Width, desc.Height, desc.Format);
   return (RETURN_OK);
 }
 
@@ -615,13 +609,11 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
       {
         pSource = (uMod_IDirect3DTexture9*)(pSourceTexture);
         DWORD64 crc64 = pSource->CRC64;
-        DWORD32 crc32 = pSource->CRC32;
-        if (pSource->ComputetHash( crc32>0 ) == RETURN_OK)
+        if (pSource->ComputetHash() == RETURN_OK)
         {
-          if (crc64 != pSource->CRC64 || (crc32>0 && crc32 != pSource->CRC32) ) // this hash has changed !!
+          if (crc64 != pSource->CRC64 ) // this hash has changed !!
           {
             pSource->CRC64 = crc64;
-            pSource->CRC32 = crc32;
             if (pSource->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSource);
             if ( uMod_Client!=NULL) uMod_Client->LookUpToMod( pSource);
           }
@@ -637,13 +629,11 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
       {
         pSourceVolume = (uMod_IDirect3DVolumeTexture9*)(pSourceTexture);
         DWORD64 crc64 = pSourceVolume->CRC64;
-        DWORD32 crc32 = pSourceVolume->CRC32;
-        if (pSourceVolume->ComputetHash( crc32>0 ) == RETURN_OK)
+        if (pSourceVolume->ComputetHash() == RETURN_OK)
         {
-          if (crc64 != pSourceVolume->CRC64 || (crc32>0 && crc32 != pSource->CRC32) ) // this hash has changed !!
+          if (crc64 != pSourceVolume->CRC64 ) // this hash has changed !!
           {
             pSourceVolume->CRC64 = crc64;
-            pSourceVolume->CRC32 = crc32;
             if (pSourceVolume->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSourceVolume);
             if ( uMod_Client!=NULL) uMod_Client->LookUpToMod( pSourceVolume);
           }
@@ -659,13 +649,11 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
       {
         pSourceCube = (uMod_IDirect3DCubeTexture9*)(pSourceTexture);
         DWORD64 crc64 = pSourceCube->CRC64;
-        DWORD32 crc32 = pSourceCube->CRC32;
-        if (pSourceCube->ComputetHash( crc32>0 ) == RETURN_OK)
+        if (pSourceCube->ComputetHash() == RETURN_OK)
         {
-          if (crc64 != pSourceCube->CRC64 || (crc32>0 && crc32 != pSource->CRC32) ) // this hash has changed !!
+          if (crc64 != pSourceCube->CRC64) // this hash has changed !!
           {
             pSourceCube->CRC64 = crc64;
-            pSourceCube->CRC32 = crc32;
             if (pSourceCube->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSourceCube);
             if ( uMod_Client!=NULL) uMod_Client->LookUpToMod( pSourceCube);
           }

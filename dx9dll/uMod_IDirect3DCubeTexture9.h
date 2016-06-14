@@ -85,7 +85,7 @@ public:
     STDMETHOD(UnlockRect)(D3DCUBEMAP_FACES FaceType, UINT Level);
 
 
-    int ComputetHash( bool compute_crc);
+    int ComputetHash();
 };
 
 
