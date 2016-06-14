@@ -44,6 +44,8 @@ unsigned int          gl_ErrorState = 0u;
 FILE*                 gl_File = NULL;
 #endif
 
+void WideScreenFix();
+
 /*
  * dll entry routine, here we initialize or clean up
  */
@@ -55,6 +57,8 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 	{
 	case DLL_PROCESS_ATTACH:
 	{
+      WideScreenFix();
+
 	  InitInstance(hModule);
 		break;
 	}

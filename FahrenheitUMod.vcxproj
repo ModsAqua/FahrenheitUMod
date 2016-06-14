@@ -41,6 +41,7 @@
     <ClCompile Include="dx9dll\uMod_TextureClient_DX9.cpp" />
     <ClCompile Include="dx9dll\uMod_TextureFunction.cpp" />
     <ClCompile Include="dx9dll\uMod_TextureServer.cpp" />
+    <ClCompile Include="dx9dll\widescreenfix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dx9dll\uMod_DX9_dll.def" />
