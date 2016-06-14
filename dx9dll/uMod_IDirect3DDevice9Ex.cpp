@@ -105,13 +105,6 @@ HRESULT __stdcall uMod_IDirect3DDevice9Ex::SetMaximumFrameLatency( UINT pMaxLate
   return(m_pIDirect3DDevice9Ex->SetMaximumFrameLatency( pMaxLatency));
 }
 
-/*
-HRESULT __stdcall uMod_IDirect3DDevice9Ex::TestCooperativeLevel()
-{
-  return(m_pIDirect3DDevice9Ex->TestCooperativeLevel());
-}
-*/
-
 HRESULT __stdcall uMod_IDirect3DDevice9Ex::WaitForVBlank( UINT SwapChainIndex)
 {
   return(m_pIDirect3DDevice9Ex->WaitForVBlank( SwapChainIndex));

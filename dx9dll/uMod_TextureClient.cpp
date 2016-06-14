@@ -25,15 +25,6 @@ uMod_TextureClient::uMod_TextureClient(const int version) : Version(version)
 {
   Message("uMod_TextureClient::uMod_TextureClient(void): %lu\n", this);
   Server = NULL;
-  BoolSaveAllTextures = false;
-  BoolSaveSingleTexture = false;
-  BoolShowTextureString = false;
-
-  KeyBack = 0;
-  KeySave = 0;
-  KeyNext = 0;
-  SavePath[0]=0;
-  GameName[0]=0;
 
   NumberToMod = 0;
   FileToMod = NULL;
@@ -42,16 +33,6 @@ uMod_TextureClient::uMod_TextureClient(const int version) : Version(version)
 
   Update = NULL;
   NumberOfUpdate = -1;
-  FontColour = D3DCOLOR_ARGB(255,255,0,0);
-  TextureColour = D3DCOLOR_ARGB(255,0,255,0);
-
-  WidthFilter = 0u;
-  HeightFilter = 0u;
-  DepthFilter = 0u;
-
-  FormatFilter = 0u;
-
-  FileFormat = uMod_D3DXIFF_DDS;
 }
 
 uMod_TextureClient::~uMod_TextureClient(void)
@@ -88,36 +69,6 @@ int uMod_TextureClient::ConnectToServer(uMod_TextureServer* server)
   }
   return (RETURN_OK);
 }
-
-int uMod_TextureClient::SetSaveDirectory( wchar_t *dir)
-{
-  Message("uMod_TextureClient::SetSaveDirectory( %ls): %lu\n", dir, this);
-  int i = 0;
-  for (i=0; i<MAX_PATH && (dir[i]); i++) SavePath[i] = dir[i];
-  if (i==MAX_PATH)
-  {
-    SavePath[0]=0;
-    return (RETURN_BAD_ARGUMENT);
-  }
-  else SavePath[i]=0;
-  return (RETURN_OK);
-}
-
-int uMod_TextureClient::SetGameName( wchar_t *name)
-{
-  Message("uMod_TextureClient::SetGameName( %ls): %lu\n", name, this);
-  int i = 0;
-  for (i=0; i<MAX_PATH && (name[i]); i++) GameName[i] = name[i];
-  if (i==MAX_PATH)
-  {
-    GameName[0]=0;
-    return (RETURN_BAD_ARGUMENT);
-  }
-  else GameName[i]=0;
-  return (RETURN_OK);
-}
-
-
 
 
 int uMod_TextureClient::AddUpdate(TextureFileStruct* update, int number)  //client must delete the update array

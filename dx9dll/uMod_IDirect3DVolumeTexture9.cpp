@@ -295,7 +295,6 @@ int uMod_IDirect3DVolumeTexture9::ComputetHash()
     }
     else size = (bits_per_pixel * desc.Width)/8;
 
-    //int size = (bits_per_pixel * desc.Width)/8;
     for (unsigned int d=0; d<desc.Depth; d++)
     {
       unsigned char* data_inner_loop = data;

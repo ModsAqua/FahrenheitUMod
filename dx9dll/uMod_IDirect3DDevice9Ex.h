@@ -202,15 +202,10 @@ public:
   int CreateSingleTexture(void);
   IDirect3DDevice9Ex* m_pIDirect3DDevice9Ex;
 
-  int CounterSaveSingleTexture;
   uMod_IDirect3DTexture9* SingleTexture;
   uMod_IDirect3DVolumeTexture9* SingleVolumeTexture;
   uMod_IDirect3DCubeTexture9* SingleCubeTexture;
   char SingleTextureMod;
-
-  D3DCOLOR TextureColour;
-  ID3DXFont *OSD_Font;
-  ID3DXSprite *pSprite;
 
   int BackBufferCount;
   bool NormalRendering;

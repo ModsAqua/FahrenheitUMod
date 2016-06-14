@@ -36,118 +36,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 
 int uMod_IDirect3DDevice9::CreateSingleTexture(void)
 {
-
-  if (SingleTexture!=NULL && SingleVolumeTexture!=NULL && SingleCubeTexture!=NULL && TextureColour==uMod_Client->TextureColour) return (RETURN_OK);
-  TextureColour = uMod_Client->TextureColour;
-  if (SingleTexture==NULL) //create texture
-  {
-    if( D3D_OK != CreateTexture(8, 8, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, (IDirect3DTexture9**) &SingleTexture, NULL))
-    {
-      Message( PRE_MESSAGE "::CreateSingleTexture(): CreateTexture Failed\n");
-      SingleTexture = NULL;
-      return (RETURN_TEXTURE_NOT_LOADED);
-    }
-    LastCreatedTexture = NULL; // set LastCreatedTexture to NULL, cause LastCreatedTexture is equal SingleTexture
-    SingleTexture->FAKE = true; //this is no texture created from by game
-    SingleTexture->Reference = -2;
-  }
-
-  {
-    D3DLOCKED_RECT d3dlr;
-    IDirect3DTexture9 *pD3Dtex = SingleTexture->m_D3Dtex;
-
-    if (D3D_OK!=pD3Dtex->LockRect(0, &d3dlr, 0, 0))
-    {
-      Message( PRE_MESSAGE "::CreateSingleTexture(): LockRect Failed\n");
-      SingleTexture->Release();
-      SingleTexture=NULL;
-      return (RETURN_TEXTURE_NOT_LOADED);
-    }
-
-    Message( PRE_MESSAGE "::CreateSingleTexture(): Set IDirect3DTexture9 Colour to %#X\n", TextureColour);
-    BYTE *pImage = (BYTE*)d3dlr.pBits;
-    for (int i=0; i<8; i++)
-    {
-      DWORD *pDst = (DWORD*)pImage;
-      for (int j=0;j<8; j++) pDst[j] = TextureColour;
-      pImage += d3dlr.Pitch;
-    }
-    pD3Dtex->UnlockRect(0);
-  }
-
-  if (SingleVolumeTexture==NULL) //create texture
-  {
-    if( D3D_OK != CreateVolumeTexture(8, 8, 8, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, (IDirect3DVolumeTexture9**) &SingleVolumeTexture, NULL))
-    {
-      Message( PRE_MESSAGE "::CreateSingleTexture(): CreateVolumeTexture Failed\n");
-      SingleVolumeTexture = NULL;
-      return (RETURN_TEXTURE_NOT_LOADED);
-    }
-    LastCreatedVolumeTexture = NULL; // set LastCreatedTexture to NULL, cause LastCreatedTexture is equal SingleTexture
-    SingleVolumeTexture->FAKE = true; //this is no texture created from by game
-    SingleVolumeTexture->Reference = -2;
-  }
-
-  {
-    D3DLOCKED_BOX d3dlr;
-    IDirect3DVolumeTexture9 *pD3Dtex = SingleVolumeTexture->m_D3Dtex;
-    //LockBox)(UINT Level, D3DLOCKED_BOX *pLockedVolume, CONST D3DBOX *pBox,
-    if (D3D_OK!=pD3Dtex->LockBox(0, &d3dlr, 0, 0))
-    {
-      Message( PRE_MESSAGE "::CreateSingleTexture(): LockBox Failed\n");
-      SingleVolumeTexture->Release();
-      SingleVolumeTexture=NULL;
-      return (RETURN_TEXTURE_NOT_LOADED);
-    }
-
-    Message( PRE_MESSAGE "::CreateSingleTexture(): Set IDirect3DVolumeTexture9 Colour to %#X\n", TextureColour);
-    DWORD *pDst = (DWORD*)d3dlr.pBits;
-    for (int i=0; i<8; i++) for (int ii=0; ii<8; ii++)
-    {
-      DWORD *pDst = (DWORD*) ((char*) d3dlr.pBits)[  i*d3dlr.SlicePitch + ii*d3dlr.RowPitch];
-      //for (int j=0;j<8; j++) pDst[j] = TextureColour;
-    }
-    pD3Dtex->UnlockBox(0);
-  }
-  if (SingleCubeTexture==NULL) //create texture
-  {
-    if( D3D_OK != CreateCubeTexture(8, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, (IDirect3DCubeTexture9**) &SingleCubeTexture, NULL))
-    {
-      Message( PRE_MESSAGE "::CreateSingleTexture(): CreateCubeTexture Failed\n");
-      SingleCubeTexture = NULL;
-      return (RETURN_TEXTURE_NOT_LOADED);
-    }
-    LastCreatedCubeTexture = NULL; // set LastCreatedTexture to NULL, cause LastCreatedTexture is equal SingleTexture
-    SingleCubeTexture->FAKE = true; //this is no texture created from by game
-    SingleCubeTexture->Reference = -2;
-  }
-
-  {
-    D3DLOCKED_RECT d3dlr;
-    IDirect3DCubeTexture9 *pD3Dtex = SingleCubeTexture->m_D3Dtex;
-
-    Message( PRE_MESSAGE "::CreateSingleTexture(): Set IDirect3DCubeTexture9 Colour to %#X\n", TextureColour);
-    for (int c=0; c<6; c++)
-    {
-      if (D3D_OK!=pD3Dtex->LockRect( (D3DCUBEMAP_FACES) c, 0, &d3dlr, 0, 0))
-      {
-        Message( PRE_MESSAGE "::CreateSingleTexture(): LockRect (Cube) Failed\n");
-        SingleCubeTexture->Release();
-        SingleCubeTexture=NULL;
-        return (RETURN_TEXTURE_NOT_LOADED);
-      }
-
-      BYTE *pImage = (BYTE*)d3dlr.pBits;
-      for (int i=0; i<8; i++)
-      {
-        DWORD *pDst = (DWORD*)pImage;
-        for (int j=0;j<8; j++) pDst[j] = TextureColour;
-        pImage += d3dlr.Pitch;
-      }
-      pD3Dtex->UnlockRect((D3DCUBEMAP_FACES)c, 0);
-    }
-  }
-
   return (RETURN_OK);
 }
 
@@ -318,22 +206,17 @@ uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_
   uMod_Server = server;
   uMod_Client = new uMod_TextureClient_DX9( this, DEF_DX_VERSION); //get a new texture client for this device
   uMod_Client->ConnectToServer( uMod_Server);
-  TextureColour = uMod_Client->TextureColour;
 
   LastCreatedTexture = NULL;
   LastCreatedVolumeTexture = NULL;
   LastCreatedCubeTexture = NULL;
 	m_pIDirect3DDevice9 = pOriginal; // store the pointer to original object
 
-  CounterSaveSingleTexture = -20;
-
   SingleTextureMod = 0;
   SingleTexture = NULL;
   SingleVolumeTexture = NULL;
   SingleCubeTexture = NULL;
-  OSD_Font = NULL;
 
-  pSprite = NULL;
   uMod_Reference = 1;
 }
 
@@ -382,8 +265,6 @@ ULONG uMod_IDirect3DDevice9::Release(void)
     if (SingleTexture!=NULL) SingleTexture->Release(); //this is the only texture we must release by ourself
     if (SingleVolumeTexture!=NULL) SingleVolumeTexture->Release(); //this is the only texture we must release by ourself
     if (SingleCubeTexture!=NULL) SingleCubeTexture->Release(); //this is the only texture we must release by ourself
-    if (OSD_Font!=NULL) OSD_Font->Release();
-    if (pSprite!=NULL) pSprite->Release();
 
     if (uMod_Client!=NULL) delete uMod_Client; //must be deleted at the end, because other releases might call a function of this object
 
@@ -391,8 +272,6 @@ ULONG uMod_IDirect3DDevice9::Release(void)
     SingleTexture = NULL;
     SingleVolumeTexture = NULL;
     SingleCubeTexture = NULL;
-    OSD_Font = NULL;
-    pSprite = NULL;
   }
 
 	ULONG count = m_pIDirect3DDevice9->Release();
@@ -473,8 +352,6 @@ UINT uMod_IDirect3DDevice9::GetNumberOfSwapChains(void)
 
 HRESULT uMod_IDirect3DDevice9::Reset(D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
-  if(OSD_Font!=NULL) {OSD_Font->Release(); OSD_Font=NULL;} //the game will crashes if the font is not released before the game is minimized!
-  if (pSprite!=NULL) {pSprite->Release(); pSprite=NULL;}
   return(m_pIDirect3DDevice9->Reset(pPresentationParameters));
 }
 
@@ -814,132 +691,6 @@ HRESULT uMod_IDirect3DDevice9::BeginScene(void)
     uMod_Client->MergeUpdate(); // merge an update, if present
 
     if (uMod_Client->Bool_CheckAgainNonAdded) uMod_Client->CheckAgainNonAdded();
-
-    if (uMod_Client->BoolSaveSingleTexture)
-    {
-      if (CreateSingleTexture()==0)
-      {
-        if (uMod_Client->KeyBack>0 && (GetAsyncKeyState( uMod_Client->KeyBack ) &1) ) //ask for the status of the back key
-        {
-          UnswitchTextures( SingleTexture); // can be called, even if texture is not switched
-          UnswitchTextures( SingleVolumeTexture); // can be called, even if texture is not switched
-          UnswitchTextures( SingleCubeTexture); // can be called, even if texture is not switched
-
-          if (CounterSaveSingleTexture<-10) {CounterSaveSingleTexture = 0; SingleTextureMod=0;} //first initialization of the counter
-          else if (--CounterSaveSingleTexture<0)
-          {
-            if (--SingleTextureMod<0) SingleTextureMod=2;
-            switch (SingleTextureMod)
-            {
-              case 0:
-                CounterSaveSingleTexture = uMod_Client->OriginalTextures.GetNumber() - 1;
-                break;
-              case 1:
-                CounterSaveSingleTexture = uMod_Client->OriginalVolumeTextures.GetNumber() - 1;
-                break;
-              case 2:
-                CounterSaveSingleTexture = uMod_Client->OriginalCubeTextures.GetNumber() - 1;
-                break;
-            }
-          }
-
-          if (CounterSaveSingleTexture >= 0)
-          {
-            switch (SingleTextureMod)
-            {
-              case 0:
-                SwitchTextures( SingleTexture,  uMod_Client->OriginalTextures[CounterSaveSingleTexture]);
-                SingleTexture->CRC64 = uMod_Client->OriginalTextures[CounterSaveSingleTexture]->CRC64; //set the CRC64 for the display
-                break;
-              case 1:
-                SwitchTextures( SingleVolumeTexture,  uMod_Client->OriginalVolumeTextures[CounterSaveSingleTexture]);
-                SingleVolumeTexture->CRC64 = uMod_Client->OriginalVolumeTextures[CounterSaveSingleTexture]->CRC64; //set the CRC64 for the display
-                break;
-              case 2:
-                SwitchTextures( SingleCubeTexture,  uMod_Client->OriginalCubeTextures[CounterSaveSingleTexture]);
-                SingleCubeTexture->CRC64 = uMod_Client->OriginalCubeTextures[CounterSaveSingleTexture]->CRC64; //set the CRC64 for the display
-                break;
-            }
-          }
-        }
-
-        if (uMod_Client->KeySave>0 && (GetAsyncKeyState( uMod_Client->KeySave ) &1) ) //ask for the status of the save key
-        {
-          switch (SingleTextureMod)
-          {
-            case 0:
-              uMod_Client->SaveTexture( SingleTexture); //after switching the SingleTexture holds the pointer to the original texture object
-              break;
-            case 1:
-              uMod_Client->SaveTexture( SingleVolumeTexture); //after switching the SingleTexture holds the pointer to the original texture object
-              break;
-            case 2:
-              uMod_Client->SaveTexture( SingleCubeTexture); //after switching the SingleTexture holds the pointer to the original texture object
-              break;
-          }
-        }
-
-        if (uMod_Client->KeyNext>0 && (GetAsyncKeyState( uMod_Client->KeyNext ) &1) ) //ask for the status of the next key
-        {
-          UnswitchTextures( SingleTexture); // can be called, even if texture is not switched
-          UnswitchTextures( SingleVolumeTexture); // can be called, even if texture is not switched
-          UnswitchTextures( SingleCubeTexture); // can be called, even if texture is not switched
-
-          if (CounterSaveSingleTexture<-10)  {CounterSaveSingleTexture = 0; SingleTextureMod=0;} //first initialization of the counter
-          else
-          {
-            int num = 0;
-            switch (SingleTextureMod)
-            {
-              case 0:
-                num = uMod_Client->OriginalTextures.GetNumber();
-                break;
-              case 1:
-                num = uMod_Client->OriginalVolumeTextures.GetNumber();
-                break;
-              case 2:
-                num = uMod_Client->OriginalCubeTextures.GetNumber();
-                break;
-            }
-            if (++CounterSaveSingleTexture>=num)
-            {
-              if (++SingleTextureMod>2) SingleTextureMod=0;
-              switch (SingleTextureMod)
-              {
-                case 0:
-                  CounterSaveSingleTexture = uMod_Client->OriginalTextures.GetNumber()>0 ? 0 : - 1;
-                  break;
-                case 1:
-                  CounterSaveSingleTexture = uMod_Client->OriginalVolumeTextures.GetNumber()>0 ? 0 : - 1;
-                  break;
-                case 2:
-                  CounterSaveSingleTexture = uMod_Client->OriginalCubeTextures.GetNumber()>0 ? 0 : - 1;
-                  break;
-              }
-            }
-          }
-
-          if (CounterSaveSingleTexture >= 0)
-          {
-            switch (SingleTextureMod)
-            {
-              case 0:
-                SwitchTextures( SingleTexture,  uMod_Client->OriginalTextures[CounterSaveSingleTexture]);
-                SingleTexture->CRC64 = uMod_Client->OriginalTextures[CounterSaveSingleTexture]->CRC64; //set the CRC64 for the display
-                break;
-              case 1:
-                SwitchTextures( SingleVolumeTexture,  uMod_Client->OriginalVolumeTextures[CounterSaveSingleTexture]);
-                SingleVolumeTexture->CRC64 = uMod_Client->OriginalVolumeTextures[CounterSaveSingleTexture]->CRC64; //set the CRC64 for the display
-                break;
-              case 2:
-                SwitchTextures( SingleCubeTexture,  uMod_Client->OriginalCubeTextures[CounterSaveSingleTexture]);
-                SingleCubeTexture->CRC64 = uMod_Client->OriginalCubeTextures[CounterSaveSingleTexture]->CRC64; //set the CRC64 for the display
-                break;
-            }
-          }
-        }
-      }
-    }
   }
 
   return (m_pIDirect3DDevice9->BeginScene());
@@ -948,96 +699,6 @@ HRESULT uMod_IDirect3DDevice9::BeginScene(void)
 
 HRESULT uMod_IDirect3DDevice9::EndScene(void)
 {
-  if ( uMod_Client!=NULL && NormalRendering && uMod_Client->BoolSaveSingleTexture && SingleTexture!=NULL && SingleVolumeTexture!=NULL && SingleCubeTexture!=NULL)
-  {
-    D3DVIEWPORT9 viewport;
-    GetViewport( &viewport);
-
-    if (SingleTexture->CrossRef_D3Dtex!=NULL && uMod_Client->BoolShowSingleTexture)
-    {
-      if (pSprite==NULL)
-      {
-        if (D3D_OK!=D3DXCreateSprite( m_pIDirect3DDevice9 , &pSprite)) pSprite = NULL;
-      }
-      if (pSprite!=NULL)
-      {
-        D3DSURFACE_DESC desc;
-        SingleTexture->m_D3Dtex->GetLevelDesc(0, &desc);
-        D3DXMATRIX scale;
-        float factorx, factory;
-
-        pSprite->Begin(D3DXSPRITE_ALPHABLEND);
-
-        factorx = 0.5f * ((float) viewport.Width) / ((float) desc.Width) ;
-        factory = 0.5f * ((float) viewport.Height) / ((float) desc.Height) ;
-
-        if (factory<factorx) factorx=factory;
-        if (factorx<1.0)
-        {
-          D3DXMATRIX scale;
-          D3DXMatrixScaling(&scale, factorx, factorx, 1.0f);
-          pSprite->SetTransform(&scale);
-        }
-        pSprite->Draw(SingleTexture->m_D3Dtex,NULL,NULL,NULL,0xFFFFFFFF);
-        pSprite->End();
-      }
-
-    }
-    if (uMod_Client->BoolShowTextureString)
-    {
-      if (OSD_Font==NULL) // create the font
-      {
-        if (D3D_OK!=D3DXCreateFontA( m_pIDirect3DDevice9, 18, 5, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Courier"), &OSD_Font))
-          OSD_Font=NULL;
-      }
-
-      if (OSD_Font!=NULL)
-      {
-        char buffer[256];
-        buffer[0]=0;
-        switch (SingleTextureMod)
-        {
-          case 0:
-          {
-            if (SingleTexture->CrossRef_D3Dtex!=NULL) sprintf_s( buffer, 256, "normal texture: %4d (1..%d): %#llX", CounterSaveSingleTexture+1, uMod_Client->OriginalTextures.GetNumber(), SingleTexture->CRC64);
-            else
-            {
-              if (uMod_Client->OriginalTextures.GetNumber()>0) sprintf_s( buffer, 256, "normal texture: %4d (1..%d): nothing selected ", CounterSaveSingleTexture+1, uMod_Client->OriginalTextures.GetNumber());
-              else sprintf_s( buffer, 100, "normal texture: nothing loaded");
-            }
-            break;
-          }
-          case 1:
-          {
-            if (SingleVolumeTexture->CrossRef_D3Dtex!=NULL) sprintf_s( buffer, 256, "volume texture: %4d (1..%d): %#llX", CounterSaveSingleTexture+1, uMod_Client->OriginalVolumeTextures.GetNumber(), SingleVolumeTexture->CRC64);
-            else
-            {
-              if (uMod_Client->OriginalVolumeTextures.GetNumber()>0) sprintf_s( buffer, 256, "volume texture: %4d (1..%d): nothing selected", CounterSaveSingleTexture+1, uMod_Client->OriginalVolumeTextures.GetNumber());
-              else sprintf_s( buffer, 100, "volume texture: nothing loaded");
-            }
-            break;
-          }
-          case 2:
-          {
-            if (SingleCubeTexture->CrossRef_D3Dtex!=NULL) sprintf_s( buffer, 256, "cube texture: %4d (1..%d): %#llX", CounterSaveSingleTexture+1, uMod_Client->OriginalCubeTextures.GetNumber(), SingleCubeTexture->CRC64);
-            else
-            {
-              if (uMod_Client->OriginalCubeTextures.GetNumber()>0) sprintf_s( buffer, 256, "cube texture: %4d (1..%d): nothing selected", CounterSaveSingleTexture+1, uMod_Client->OriginalCubeTextures.GetNumber());
-              else sprintf_s( buffer, 100, "cube   texture: nothing loaded");
-            }
-            break;
-          }
-        }
-
-        RECT rct;
-        rct.left=viewport.X + 10;
-        rct.right=0; //size of box is calculated automatically (DT_NOCLIP)
-        rct.top=viewport.Y + 10;
-        rct.bottom=0; //size of box is calculated automatically (DT_NOCLIP)
-        OSD_Font->DrawTextA(NULL, buffer, -1, &rct, DT_NOCLIP, uMod_Client->FontColour);
-      }
-    }
-  }
   return(m_pIDirect3DDevice9->EndScene());
 }
 

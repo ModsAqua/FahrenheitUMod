@@ -48,7 +48,6 @@ public:
 		// thus the fake texture can also be deleted
 		Reference = -1; //need for fast deleting
     CRC64 = 0u;
-    CRC32 = 0u;
     FAKE = false;
 	}
 
@@ -57,7 +56,6 @@ public:
   IDirect3DDevice9 *m_D3Ddev; //!< pointer to the device
   int Reference; //!< Index in the vector (needed for a fast delete).
   DWORD64 CRC64; //!< computed hash value for this game texture.
-  DWORD32 CRC32; //!< computed crc32 value for this game texture.
   bool FAKE; //!< True if this texture is was loaded by uMod (fake texture)
 
 	// original interface

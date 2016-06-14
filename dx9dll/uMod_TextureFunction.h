@@ -40,19 +40,6 @@ inline void GetCRC64(DWORD64 &crc, const unsigned char *cp, unsigned long length
 }
 
 
-
-inline void InitCRC32(DWORD32 &crc)
-{
-  crc = 0xffffffff;
-}
-
-/**
- * Caluclate the CRC32 value over a buffer. This function is used in texmod. Thanks to RS for given me this information!
- * @param[in] data pointer to the buffer
- * @param[in] len length of buffer in bytes
- * @return CRC32 value
- */
-void GetCRC32( DWORD32 &crc, unsigned char *data, unsigned int len);
 /*
     case D3DFMT_MULTI2_ARGB8:
     case D3DFMT_VERTEXDATA:

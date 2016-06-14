@@ -86,33 +86,6 @@ public:
    */
   int RemoveTexture( uMod_IDirect3DCubeTexture9* tex);
 
-  int SaveAllTextures(bool val); //called from the Server
-  int SaveSingleTexture(bool val); //called from the Server
-
-  /**
-   * called from uMod_IDirect3DDevice9::BeginScene() (save button) or from AddTexture(...) (SaveAllTextures)
-   * @param[in] pTexture
-   * @param[in] save_all true if called from AddTexture(...) -> (SaveAllTextures is true)
-   * @return
-   */
-  int SaveTexture(uMod_IDirect3DTexture9* pTexture, bool save_all=false); //
-
-  /**
-   * called from uMod_IDirect3DDevice9::BeginScene() (save button) or from AddTexture(...) (SaveAllTextures)
-   * @param[in] pTexture
-   * @param[in] save_all true if called from AddTexture(...) -> (SaveAllTextures is true)
-   * @return
-   */
-  int SaveTexture(uMod_IDirect3DVolumeTexture9* pTexture, bool save_all=false);
-
-  /**
-   * called from uMod_IDirect3DDevice9::BeginScene() (save button) or from AddTexture(...) (SaveAllTextures)
-   * @param[in] pTexture
-   * @param[in] save_all true if called from AddTexture(...) -> (SaveAllTextures is true)
-   * @return
-   */
-  int SaveTexture(uMod_IDirect3DCubeTexture9* pTexture, bool save_all=false);
-
   int MergeUpdate(void); //called from uMod_IDirect3DDevice9::BeginScene()
 
 
@@ -139,30 +112,9 @@ public:
 private:
   IDirect3DDevice9* D3D9Device;
 
-
-  /**
-   * Save the texture into a file (reagrding the various file formats.
-   * @param[in] pTexture
-   * @param[inout] file name without trailing format extension
-   * @return
-   */
-  int SaveTexture(IDirect3DBaseTexture9* pTexture, wchar_t *file);
-
-  /**
-   * Return true if this texture has the right format to pass the FormatFilter and thus it is saved
-   * @param format
-   * @return
-   */
-  bool SaveTextureFilterFormat(D3DFORMAT format);
-
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DTexture9 **ppTexture); // called if a target texture is found
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DVolumeTexture9 **ppTexture); // called if a target texture is found
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DCubeTexture9 **ppTexture); // called if a target texture is found
-
-  // and the corresponding fake texture should be loaded
-
-  //MyTypeHash GetHash(unsigned char *str, int len);
-  //unsigned int GetCRC32(char *pcDatabuf, unsigned int ulDatalen);
 };
 
 
