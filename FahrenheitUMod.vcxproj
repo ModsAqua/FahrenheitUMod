@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dx9dll\uMod_ArrayHandler.h" />
+    <ClInclude Include="dx9dll\uMod_Defines.h" />
+    <ClInclude Include="dx9dll\uMod_DX9_dll.h" />
+    <ClInclude Include="dx9dll\uMod_DXMain_dll.h" />
+    <ClInclude Include="dx9dll\uMod_Error.h" />
+    <ClInclude Include="dx9dll\uMod_GlobalDefines.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3D9.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3D9Ex.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DCubeTexture9.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DDevice9.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DDevice9Ex.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DTexture9.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DVolumeTexture9.h" />
+    <ClInclude Include="dx9dll\uMod_Main.h" />
+    <ClInclude Include="dx9dll\uMod_TextureClient.h" />
+    <ClInclude Include="dx9dll\uMod_TextureClient_DX9.h" />
+    <ClInclude Include="dx9dll\uMod_TextureFunction.h" />
+    <ClInclude Include="dx9dll\uMod_TextureServer.h" />
+    <ClInclude Include="dx9dll\uMod_Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dx9dll\uMod_DX9_dll.cpp" />
+    <ClCompile Include="dx9dll\uMod_DXMain_dll.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3D9.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3D9Ex.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DCubeTexture9.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DDevice9.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DDevice9Ex.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DTexture9.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DVolumeTexture9.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureClient.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureClient_DX9.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureFunction.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureServer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dx9dll\uMod_DX9_dll.def" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9BE18785-8821-4BCC-97D7-17632F4A9402}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>FahrenheitUMod</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>d3d9</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>Full</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LOG_MESSAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winmm.lib;d3dx9.lib;dxguid.lib;user32.lib;Kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>dx9dll\uMod_DX9_dll.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
