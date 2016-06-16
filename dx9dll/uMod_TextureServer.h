@@ -81,23 +81,7 @@ private:
    * @param[in] force set to TRUE to force a reload of the texture
    * @return RETURN_OK on success
    */
-  int AddFile( char* buffer, DWORD64 size,  DWORD64 hash, bool force); // called from Mainloop(), if the content of the texture is sent
-
-  /**
-   * Add a file to the list of texture to be modded (called from the mainloop). Not supported anymore!
-   * @param[in] file_name Name and path to the file to be loaded.
-   * @param[in] hash hash of the texture to be replaced
-   * @param[in] force set to TRUE to force a reload of the texture
-   * @return RETURN_OK on success
-   */
-  int AddFile( wchar_t* file_name, DWORD64 hash, bool force); // called from Mainloop(), if the name and the path to the file is sent
-
-  /**
-   * Remove a texture (called from the mainloop).
-   * @param[in] hash Hash of the target texture.
-   * @return RETURN_OK on success
-   */
-  int RemoveFile( DWORD64 hash); // called from Mainloop()
+  int AddFile( char* file_name, DWORD64 size,  DWORD64 hash, bool force); // called from Mainloop(), if the content of the texture is sent
 
   /**
    * Send the files to be modded (Update) to a client (called from the mainloop).

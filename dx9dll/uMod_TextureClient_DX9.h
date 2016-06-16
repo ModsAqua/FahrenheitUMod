@@ -112,6 +112,8 @@ public:
 private:
   IDirect3DDevice9* D3D9Device;
 
+  int LoadFile(char *path, char **buffer, UINT64 size);
+
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DTexture9 **ppTexture); // called if a target texture is found
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DVolumeTexture9 **ppTexture); // called if a target texture is found
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DCubeTexture9 **ppTexture); // called if a target texture is found

@@ -30,6 +30,7 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 typedef struct
 {
   bool ForceReload; //!< to force a reload of the texture (only important, if it is already modded)
+  char filePath[MAX_PATH];
   char* pData; //!<  store texture file as file in memory
   unsigned int Size; //!< size of file (\a pData)
   int NumberOfTextures; //!< Number of textures loaded by the game, which match the hash and thus are switched

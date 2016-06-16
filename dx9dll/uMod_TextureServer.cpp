@@ -40,14 +40,14 @@ uMod_TextureServer::~uMod_TextureServer(void)
   int num = CurrentMod.GetNumber();
   for (int i = 0; i < num; i++)
   {
-    delete [] CurrentMod[i]->pData; //delete the file content of the texture
+    if (CurrentMod[i]->pData) delete [] CurrentMod[i]->pData; //delete the file content of the texture
     delete CurrentMod[i]; //delete the structure
   }
 
   num = OldMod.GetNumber();
   for (int i = 0; i < num; i++)
   {
-    delete [] OldMod[i]->pData; //delete the file content of the texture
+    if (OldMod[i]->pData) delete [] OldMod[i]->pData; //delete the file content of the texture
     delete OldMod[i]; //delete the structure
   }
 
@@ -113,9 +113,9 @@ int uMod_TextureServer::RemoveClient(uMod_TextureClient *client, const int versi
   return (RETURN_OK);
 }
 
-int uMod_TextureServer::AddFile( char* buffer, DWORD64 size,  DWORD64 hash, bool force) // called from Mainloop()
+int uMod_TextureServer::AddFile( char* file_name, DWORD64 size, DWORD64 hash, bool force) // called from Mainloop()
 {
-  Message("uMod_TextureServer::AddFile( %p %llu, %#llX, %d): %p\n", buffer, size, hash, force, this);
+  Message("uMod_TextureServer::AddFile( %s %#llX, %llu, %d): %p\n", file_name, hash, size, force, this);
 
   if (int ret = LockMutex())
   {
@@ -130,7 +130,6 @@ int uMod_TextureServer::AddFile( char* buffer, DWORD64 size,  DWORD64 hash, bool
     if (force) {temp = CurrentMod[i]; break;} // we need to reload it
     else
     {
-      if (buffer!=NULL) delete [] buffer;
       return (RETURN_OK); // we still have added this texture
     }
   }
@@ -145,7 +144,6 @@ int uMod_TextureServer::AddFile( char* buffer, DWORD64 size,  DWORD64 hash, bool
       if (force) break; // we must reload it
       else
       {
-        if (buffer!=NULL) delete [] buffer;
         return (RETURN_OK); // we should not reload it
       }
     }
@@ -165,10 +163,9 @@ int uMod_TextureServer::AddFile( char* buffer, DWORD64 size,  DWORD64 hash, bool
     temp->Reference = -1;
   }
 
-  temp->pData = buffer;
+  strcpy((char *)&temp->filePath, file_name);
 
-  for (unsigned int i=0; i<size; i++) temp->pData[i] = buffer[i];
-
+  temp->pData = NULL;
   temp->Size = (unsigned int) size;
   temp->NumberOfTextures = 0;
   temp->Textures = NULL;
@@ -213,6 +210,7 @@ int uMod_TextureServer::PropagateUpdate(uMod_TextureClient* client) // called fr
 #define cpy_file_struct( a, b) \
 {  \
   a.ForceReload = b.ForceReload; \
+  strcpy(a.filePath, b.filePath); \
   a.pData = b.pData; \
   a.Size = b.Size; \
   a.NumberOfTextures = b.NumberOfTextures; \
@@ -277,11 +275,26 @@ int uMod_TextureServer::MainLoop(void) // run as a separated thread
 
   unsigned long num = 0u;
   DWORD64 texture_size = 0u;
+  char texture_path[MAX_PATH];
   DWORD64 texture_hash = 0u;
+  unsigned long width = 0u, height = 0u, format = 0u;
+  WIN32_FIND_DATA ffd;
+  HANDLE file;
 
+  file = FindFirstFile("textures\\Indigo Prophecy_*.dds", &ffd);
+  if (file == INVALID_HANDLE_VALUE)
+	  return (RETURN_OK);
 
+  do {
+	  texture_size = (ffd.nFileSizeHigh * (MAXDWORD + 1)) + ffd.nFileSizeLow;
+	  sprintf(texture_path, "textures\\%s", ffd.cFileName);
+	  sscanf(ffd.cFileName, "Indigo Prophecy_W%u_H%u_F%u_T_0X%llx", &width, &height, &format, &texture_hash);
+	  AddFile(texture_path, texture_size, texture_hash, true);
+  } while (FindNextFile(file, &ffd) != 0);
 
+  FindClose(file);
 
+  PropagateUpdate();
 
   return (RETURN_OK);
 }
