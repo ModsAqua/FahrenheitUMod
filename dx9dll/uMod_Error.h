@@ -48,9 +48,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 #define RETURN_UPDATE_ALLREADY_ADDED -50
 #define RETURN_FILE_NOT_LOADED -51
 
-#define RETURN_PIPE_NOT_OPENED 60
-#define RETURN_PIPE_ERROR 61
-
 
 
 

@@ -37,21 +37,9 @@ typedef struct
   DWORD64 Hash;
 } MsgStruct;
 
-/**
- *
- */
-typedef struct
-{
-  HANDLE In; //!< Incoming pipe
-  HANDLE Out; //!< Outgoning pipe
-} PipeStruct;
-
 
 #define uMod_VERSION_char "uMod V 2.0 alpha (r51)"
 #define uMod_VERSION L"uMod V 2.0 alpha (r51)"
-
-#define PIPE_uMod2Game L"\\\\.\\pipe\\uMod2Game"
-#define PIPE_Game2uMod L"\\\\.\\pipe\\Game2uMod"
 
 #define CONTROL_ADD_TEXTURE 1
 #define CONTROL_FORCE_RELOAD_TEXTURE 2

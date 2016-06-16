@@ -65,20 +65,6 @@ public:
   int RemoveClient(uMod_TextureClient *client, const int version); // called from a Client
 
   /**
-   * Opens the pipe to the GUI (called from the dll entry routine)
-   * @param[in] name Name of the game
-   * @param[in] injection_method global hook=1, direct injection=2, no injection=3
-   * @return RETURN_OK on success
-   */
-  int OpenPipe(wchar_t *name, int injection_method); // called on initialization of our d3d9 fake dll
-
-  /**
-   * Close the Pipe to the GUI (called if dll entry is called to attach from the game)
-   * @return RETURN_OK on success
-   */
-  int ClosePipe(void); // called on exit of our d3d9 fake dll
-
-  /**
    * The mainloop reads from the pipe (blocking reading). It is running in a separate server thread.
    * @return RETURN_OK on success
    */
@@ -140,8 +126,6 @@ private:
   int UnlockMutex();
   HANDLE Mutex; //!< Mutex protects the simultaneously add or remove of multiple clients.
 
-
-  PipeStruct Pipe;
 
   uMod_TextureClient** Clients;
   int NumberOfClients;

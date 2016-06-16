@@ -98,24 +98,13 @@ void InitInstance(HINSTANCE hModule)
 
     InitDX9();
 
-    if (gl_TextureServer->OpenPipe(game, 3)) //open the pipe and send the name+path of this executable
-    {
-      Message("InitInstance: Pipe not opened\n");
-      return;
-    }
-
     gl_ServerThread = CreateThread( NULL, 0, ServerThread, NULL, 0, NULL); //creating a thread for the mainloop
     if (gl_ServerThread==NULL) {Message("InitInstance: Serverthread not started\n");}
-
   }
 }
 
 void ExitInstance()
 {
-  if (gl_TextureServer!=NULL)
-  {
-    gl_TextureServer->ClosePipe(); //This must be done before the server thread is killed, because the server thread will endless wait on the ReadFile()
-  }
   if (gl_ServerThread!=NULL)
   {
     CloseHandle(gl_ServerThread); // kill the server thread

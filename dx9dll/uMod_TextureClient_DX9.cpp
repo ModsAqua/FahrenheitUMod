@@ -553,7 +553,6 @@ int uMod_TextureClient_DX9::LoadTexture( TextureFileStruct* file_in_memory, uMod
 {
   Message("LoadTexture( %p, %p, %#llX): %p\n", file_in_memory, ppTexture, file_in_memory->Hash, this);
   if (D3D_OK != D3DXCreateTextureFromFileInMemoryEx( D3D9Device, file_in_memory->pData, file_in_memory->Size, D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (IDirect3DTexture9 **) ppTexture))
-  //if (D3D_OK != D3DXCreateTextureFromFileInMemory( D3D9Device, file_in_memory->pData, file_in_memory->Size, (IDirect3DTexture9 **) ppTexture))
   {
     *ppTexture=NULL;
     return (RETURN_TEXTURE_NOT_LOADED);
@@ -573,7 +572,6 @@ int uMod_TextureClient_DX9::LoadTexture( TextureFileStruct* file_in_memory, uMod
 {
   Message("LoadTexture( Volume %p, %p, %#llX): %p\n", file_in_memory, ppTexture, file_in_memory->Hash, this);
   if (D3D_OK != D3DXCreateVolumeTextureFromFileInMemoryEx( D3D9Device, file_in_memory->pData, file_in_memory->Size, D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (IDirect3DVolumeTexture9 **) ppTexture))
-  //if (D3D_OK != D3DXCreateVolumeTextureFromFileInMemory( D3D9Device, file_in_memory->pData, file_in_memory->Size, (IDirect3DVolumeTexture9 **) ppTexture))
   {
     *ppTexture=NULL;
     return (RETURN_TEXTURE_NOT_LOADED);
@@ -593,7 +591,6 @@ int uMod_TextureClient_DX9::LoadTexture( TextureFileStruct* file_in_memory, uMod
 {
   Message("LoadTexture( Cube %p, %p, %#llX): %p\n", file_in_memory, ppTexture, file_in_memory->Hash, this);
   if (D3D_OK != D3DXCreateCubeTextureFromFileInMemoryEx( D3D9Device, file_in_memory->pData, file_in_memory->Size, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (IDirect3DCubeTexture9 **) ppTexture))
-  //if (D3D_OK != D3DXCreateCubeTextureFromFileInMemory( D3D9Device, file_in_memory->pData, file_in_memory->Size, (IDirect3DCubeTexture9 **) ppTexture))
   {
     *ppTexture=NULL;
     return (RETURN_TEXTURE_NOT_LOADED);
