@@ -27,7 +27,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 
 #include "uMod_DX9_dll.h"
 #include "uMod_IDirect3D9.h"
-#include "uMod_IDirect3D9Ex.h"
 
 
 /*
@@ -36,7 +35,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 HINSTANCE             gl_hOriginal_DX9_Dll = NULL;
 
 typedef IDirect3D9 *(APIENTRY *Direct3DCreate9_type)(UINT);
-typedef HRESULT (APIENTRY *Direct3DCreate9Ex_type)(UINT SDKVersion, IDirect3D9Ex **ppD3D);
 
 
 
@@ -106,36 +104,6 @@ IDirect3D9* WINAPI  Direct3DCreate9(UINT SDKVersion)
 
 	// Return pointer to our object instead of "real one"
 	return (pIDirect3D9);
-}
-
-HRESULT WINAPI  Direct3DCreate9Ex(UINT SDKVersion, IDirect3D9Ex **ppD3D)
-{
-  Message("WINAPI  Direct3DCreate9Ex\n");
-
-  if (gl_hOriginal_DX9_Dll==NULL) LoadOriginal_DX9_Dll(); // looking for the "original d3d9.dll"
-  if (gl_hOriginal_DX9_Dll==NULL) return (NULL);
-
-  // find original function in original d3d9.dll
-  Direct3DCreate9Ex_type D3DCreate9Ex_fn = (Direct3DCreate9Ex_type) GetProcAddress( gl_hOriginal_DX9_Dll, "Direct3DCreate9Ex");
-
-
-  if (!D3DCreate9Ex_fn)
-  {
-    Message("Direct3DCreate9Ex: original function not found in dll\n");
-    return (D3DERR_NOTAVAILABLE);
-  }
-
-
-  //Create originale IDirect3D9 object
-  IDirect3D9Ex *pIDirect3D9Ex_orig;
-  HRESULT ret = D3DCreate9Ex_fn( SDKVersion, &pIDirect3D9Ex_orig);
-  if (ret!=S_OK) return (ret);
-
-  //create our uMod_IDirect3D9 object
-  uMod_IDirect3D9Ex *pIDirect3D9Ex = new uMod_IDirect3D9Ex( pIDirect3D9Ex_orig, gl_TextureServer);
-
-  ppD3D = &pIDirect3D9Ex_orig; // Return pointer to our object instead of "real one"
-  return (ret);
 }
 
 typedef IDirect3D9 *(APIENTRY *Direct3DCreate9_type)(UINT);

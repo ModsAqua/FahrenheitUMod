@@ -27,7 +27,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 #include "uMod_IDirect3DVolumeTexture9.h"
 #include "uMod_IDirect3DCubeTexture9.h"
 #include "uMod_IDirect3DDevice9.h"
-#include "uMod_IDirect3DDevice9Ex.h"
 
 
 class uMod_TextureServer;

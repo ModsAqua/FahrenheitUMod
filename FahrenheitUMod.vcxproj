@@ -18,10 +18,8 @@
     <ClInclude Include="dx9dll\uMod_Error.h" />
     <ClInclude Include="dx9dll\uMod_GlobalDefines.h" />
     <ClInclude Include="dx9dll\uMod_IDirect3D9.h" />
-    <ClInclude Include="dx9dll\uMod_IDirect3D9Ex.h" />
     <ClInclude Include="dx9dll\uMod_IDirect3DCubeTexture9.h" />
     <ClInclude Include="dx9dll\uMod_IDirect3DDevice9.h" />
-    <ClInclude Include="dx9dll\uMod_IDirect3DDevice9Ex.h" />
     <ClInclude Include="dx9dll\uMod_IDirect3DTexture9.h" />
     <ClInclude Include="dx9dll\uMod_IDirect3DVolumeTexture9.h" />
     <ClInclude Include="dx9dll\uMod_Main.h" />
@@ -35,10 +33,8 @@
     <ClCompile Include="dx9dll\uMod_DX9_dll.cpp" />
     <ClCompile Include="dx9dll\uMod_DXMain_dll.cpp" />
     <ClCompile Include="dx9dll\uMod_IDirect3D9.cpp" />
-    <ClCompile Include="dx9dll\uMod_IDirect3D9Ex.cpp" />
     <ClCompile Include="dx9dll\uMod_IDirect3DCubeTexture9.cpp" />
     <ClCompile Include="dx9dll\uMod_IDirect3DDevice9.cpp" />
-    <ClCompile Include="dx9dll\uMod_IDirect3DDevice9Ex.cpp" />
     <ClCompile Include="dx9dll\uMod_IDirect3DTexture9.cpp" />
     <ClCompile Include="dx9dll\uMod_IDirect3DVolumeTexture9.cpp" />
     <ClCompile Include="dx9dll\uMod_TextureClient.cpp" />

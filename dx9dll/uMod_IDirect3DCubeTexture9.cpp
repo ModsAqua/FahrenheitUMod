@@ -89,14 +89,7 @@ ULONG APIENTRY uMod_IDirect3DCubeTexture9::Release()
       if (count==0) //if texture is released we switch the textures back
       {
         UnswitchTextures(this);
-        if (ret == 0x01000000L)
-        {
-          if (((uMod_IDirect3DDevice9*) m_D3Ddev)->GetSingleCubeTexture()!=fake_texture) fake_texture->Release(); // we release the fake texture
-        }
-        else
-        {
-          if (((uMod_IDirect3DDevice9Ex*) m_D3Ddev)->GetSingleCubeTexture()!=fake_texture) fake_texture->Release(); // we release the fake texture
-        }
+        if (((uMod_IDirect3DDevice9*) m_D3Ddev)->GetSingleCubeTexture()!=fake_texture) fake_texture->Release(); // we release the fake texture
       }
     }
     else
@@ -109,16 +102,8 @@ ULONG APIENTRY uMod_IDirect3DCubeTexture9::Release()
   {
     // if this texture is the LastCreatedTexture, the next time LastCreatedTexture would be added,
     // the hash of a non existing texture would be calculated
-    if (ret == 0x01000000L)
-    {
-      if (((uMod_IDirect3DDevice9*) m_D3Ddev)->GetLastCreatedCubeTexture()==this) ((uMod_IDirect3DDevice9*) m_D3Ddev)->SetLastCreatedCubeTexture( NULL);
-      else ((uMod_IDirect3DDevice9*) m_D3Ddev)->GetuMod_Client()->RemoveTexture(this); // remove this texture from the texture client
-    }
-    else
-    {
-      if (((uMod_IDirect3DDevice9Ex*) m_D3Ddev)->GetLastCreatedCubeTexture()==this) ((uMod_IDirect3DDevice9Ex*) m_D3Ddev)->SetLastCreatedCubeTexture( NULL);
-      else ((uMod_IDirect3DDevice9Ex*) m_D3Ddev)->GetuMod_Client()->RemoveTexture(this); // remove this texture from the texture client
-    }
+    if (((uMod_IDirect3DDevice9*) m_D3Ddev)->GetLastCreatedCubeTexture()==this) ((uMod_IDirect3DDevice9*) m_D3Ddev)->SetLastCreatedCubeTexture( NULL);
+    else ((uMod_IDirect3DDevice9*) m_D3Ddev)->GetuMod_Client()->RemoveTexture(this); // remove this texture from the texture client
 
     delete(this);
   }
