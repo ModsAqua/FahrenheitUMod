@@ -31,8 +31,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 #include "uMod_Main.h"
 #include "uMod_TextureClient_DX9.h"
 #include "uMod_IDirect3DTexture9.h"
-#include "uMod_IDirect3DVolumeTexture9.h"
-#include "uMod_IDirect3DCubeTexture9.h"
 
 class uMod_TextureClient_DX9;
 
@@ -171,16 +169,7 @@ public:
   uMod_IDirect3DTexture9* GetLastCreatedTexture(void) {return (LastCreatedTexture);}
   int SetLastCreatedTexture(uMod_IDirect3DTexture9* pTexture) {LastCreatedTexture=pTexture; return (RETURN_OK);}
 
-  uMod_IDirect3DVolumeTexture9* GetLastCreatedVolumeTexture(void) {return (LastCreatedVolumeTexture);}
-  int SetLastCreatedVolumeTexture(uMod_IDirect3DVolumeTexture9* pTexture) {LastCreatedVolumeTexture=pTexture; return (RETURN_OK);}
-
-  uMod_IDirect3DCubeTexture9* GetLastCreatedCubeTexture(void) {return (LastCreatedCubeTexture);}
-  int SetLastCreatedCubeTexture(uMod_IDirect3DCubeTexture9* pTexture) {LastCreatedCubeTexture=pTexture; return (RETURN_OK);}
-
-
   uMod_IDirect3DTexture9* GetSingleTexture(void) {return (SingleTexture);}
-  uMod_IDirect3DVolumeTexture9* GetSingleVolumeTexture(void) {return (SingleVolumeTexture);}
-  uMod_IDirect3DCubeTexture9* GetSingleCubeTexture(void) {return (SingleCubeTexture);}
 
   int ComputetHash( DWORD64 &CRC64, IDirect3DSurface9 *surface);
 
@@ -189,8 +178,6 @@ public:
   IDirect3DDevice9* m_pIDirect3DDevice9;
 
   uMod_IDirect3DTexture9* SingleTexture;
-  uMod_IDirect3DVolumeTexture9* SingleVolumeTexture;
-  uMod_IDirect3DCubeTexture9* SingleCubeTexture;
   char SingleTextureMod;
 
   int BackBufferCount;
@@ -199,8 +186,6 @@ public:
   int uMod_Reference;
 
   uMod_IDirect3DTexture9* LastCreatedTexture;
-  uMod_IDirect3DVolumeTexture9* LastCreatedVolumeTexture;
-  uMod_IDirect3DCubeTexture9* LastCreatedCubeTexture;
 
   uMod_TextureServer* uMod_Server;
   uMod_TextureClient_DX9* uMod_Client;

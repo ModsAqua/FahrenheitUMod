@@ -24,8 +24,6 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 #include "uMod_Error.h"
 #include "uMod_TextureClient.h"
 #include "uMod_IDirect3DTexture9.h"
-#include "uMod_IDirect3DVolumeTexture9.h"
-#include "uMod_IDirect3DCubeTexture9.h"
 #include "uMod_IDirect3DDevice9.h"
 
 
@@ -51,39 +49,12 @@ public:
   int AddTexture( uMod_IDirect3DTexture9* tex);
 
   /**
-   * called from uMod_IDirect3DVolumeTexture9::CreateTexture(...) or uMod_IDirect3DDevice9::BeginScene()
-   * @param[in] tex texture to be added
-   * @return
-   */
-  int AddTexture( uMod_IDirect3DVolumeTexture9* tex);
-
-  /**
-   * called from uMod_IDirect3DCubeTexture9::CreateTexture(...) or uMod_IDirect3DDevice9::BeginScene()
-   * @param[in] tex texture to be added
-   * @return
-   */
-  int AddTexture( uMod_IDirect3DCubeTexture9* tex);
-
-  /**
    * called from  uMod_IDirect3DTexture9::Release()
    * @param[in] tex
    * @return
    */
   int RemoveTexture( uMod_IDirect3DTexture9* tex);
 
-  /**
-   * called from  uMod_IDirect3DVolumeTexture9::Release()
-   * @param[in] tex
-   * @return
-   */
-  int RemoveTexture( uMod_IDirect3DVolumeTexture9* tex);
-
-  /**
-   * called from  uMod_IDirect3DCubeTexture9::Release()
-   * @param[in] tex
-   * @return
-   */
-  int RemoveTexture( uMod_IDirect3DCubeTexture9* tex);
 
   int MergeUpdate(void); //called from uMod_IDirect3DDevice9::BeginScene()
 
@@ -91,13 +62,7 @@ public:
 
   int LookUpToMod( uMod_IDirect3DTexture9* pTexture, int num_index_list=0, int *index_list=(int*)0); // called at the end AddTexture(...) and from Device->UpdateTexture(...)
 
-  int LookUpToMod( uMod_IDirect3DVolumeTexture9* pTexture, int num_index_list=0, int *index_list=(int*)0); // called at the end AddTexture(...) and from Device->UpdateTexture(...)
-
-  int LookUpToMod( uMod_IDirect3DCubeTexture9* pTexture, int num_index_list=0, int *index_list=(int*)0); // called at the end AddTexture(...) and from Device->UpdateTexture(...)
-
   uMod_TextureHandler<uMod_IDirect3DTexture9> OriginalTextures; // stores the pointer to the uMod_IDirect3DTexture9 objects created by the game
-  uMod_TextureHandler<uMod_IDirect3DVolumeTexture9> OriginalVolumeTextures; // stores the pointer to the uMod_IDirect3DVolumeTexture9 objects created by the game
-  uMod_TextureHandler<uMod_IDirect3DCubeTexture9> OriginalCubeTextures; // stores the pointer to the uMod_IDirect3DCubeTexture9 objects created by the game
 
 
   // if the has could not be calculated for a texture it is not considered in the original texture list,
@@ -105,8 +70,6 @@ public:
   int CheckAgainNonAdded(void);
   bool Bool_CheckAgainNonAdded;
   uMod_TextureHandler<uMod_IDirect3DTexture9> NonAdded_OriginalTextures; // stores the pointer to the uMod_IDirect3DTexture9 objects created by the game
-  uMod_TextureHandler<uMod_IDirect3DVolumeTexture9> NonAdded_OriginalVolumeTextures; // stores the pointer to the uMod_IDirect3DVolumeTexture9 objects created by the game
-  uMod_TextureHandler<uMod_IDirect3DCubeTexture9> NonAdded_OriginalCubeTextures; // stores the pointer to the uMod_IDirect3DCubeTexture9 objects created by the game
 
 private:
   IDirect3DDevice9* D3D9Device;
@@ -114,8 +77,6 @@ private:
   int LoadFile(char *path, char **buffer, UINT64 size);
 
   int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DTexture9 **ppTexture); // called if a target texture is found
-  int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DVolumeTexture9 **ppTexture); // called if a target texture is found
-  int LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DCubeTexture9 **ppTexture); // called if a target texture is found
 };
 
 

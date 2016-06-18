@@ -58,55 +58,9 @@ int uMod_TextureClient_DX9::AddTexture( uMod_IDirect3DTexture9* pTexture)
   return (LookUpToMod(pTexture)); // check if this texture should be modded
 }
 
-int uMod_TextureClient_DX9::AddTexture( uMod_IDirect3DVolumeTexture9* pTexture)
-{
-  ((uMod_IDirect3DDevice9*)D3D9Device)->SetLastCreatedVolumeTexture(NULL); //this texture must no be added twice
-
-  if (pTexture->FAKE) return (RETURN_OK); // this is a fake texture
-
-  Message("uMod_TextureClient_DX9::AddTexture( Volume: %p): %p (thread: %lu)\n", pTexture, this, GetCurrentThreadId());
-
-  if (int ret = pTexture->ComputetHash())
-  {
-    Bool_CheckAgainNonAdded = true;
-    NonAdded_OriginalVolumeTextures.Add( pTexture);
-    return (ret);
-  }
-
-  if (gl_ErrorState & uMod_ERROR_FATAL) return (RETURN_FATAL_ERROR);
-
-  OriginalVolumeTextures.Add( pTexture); // add the texture to the list of original texture
-
-  return (LookUpToMod(pTexture)); // check if this texture should be modded
-}
-
-int uMod_TextureClient_DX9::AddTexture( uMod_IDirect3DCubeTexture9* pTexture)
-{
-  ((uMod_IDirect3DDevice9*)D3D9Device)->SetLastCreatedCubeTexture(NULL); //this texture must no be added twice
-
-  if (pTexture->FAKE) return (RETURN_OK); // this is a fake texture
-
-  Message("uMod_TextureClient_DX9::AddTexture( Cube: %p): %p (thread: %lu)\n", pTexture, this, GetCurrentThreadId());
-
-  if (int ret = pTexture->ComputetHash())
-  {
-    Bool_CheckAgainNonAdded = true;
-    NonAdded_OriginalCubeTextures.Add( pTexture);
-    return (ret);
-  }
-
-  if (gl_ErrorState & uMod_ERROR_FATAL) return (RETURN_FATAL_ERROR);
-
-  OriginalCubeTextures.Add( pTexture); // add the texture to the list of original texture
-
-  return (LookUpToMod(pTexture)); // check if this texture should be modded
-}
-
-
 int uMod_TextureClient_DX9::CheckAgainNonAdded(void)
 {
-  Message("uMod_TextureClient_DX9::CheckAgainNonAdded( %u, %u, %u): %p\n", NonAdded_OriginalTextures.GetNumber(),
-      NonAdded_OriginalVolumeTextures.GetNumber(), NonAdded_OriginalCubeTextures.GetNumber(), this);
+  Message("uMod_TextureClient_DX9::CheckAgainNonAdded( %u): %p\n", NonAdded_OriginalTextures.GetNumber(), this);
 
   Bool_CheckAgainNonAdded = false;
 
@@ -123,31 +77,6 @@ int uMod_TextureClient_DX9::CheckAgainNonAdded(void)
     }
   }
 
-  num = NonAdded_OriginalVolumeTextures.GetNumber();
-  for (int i=num-1; i>=0; i--)
-  {
-    uMod_IDirect3DVolumeTexture9* pTexture = NonAdded_OriginalVolumeTextures[i];
-
-    if (pTexture->ComputetHash() == RETURN_OK)
-    {
-      NonAdded_OriginalVolumeTextures.Remove(pTexture);
-      OriginalVolumeTextures.Add( pTexture); // add the texture to the list of original texture
-      LookUpToMod(pTexture); // check if this texture should be modded
-    }
-  }
-
-  num = NonAdded_OriginalCubeTextures.GetNumber();
-  for (int i=num-1; i>=0; i--)
-  {
-    uMod_IDirect3DCubeTexture9* pTexture = NonAdded_OriginalCubeTextures[i];
-
-    if (pTexture->ComputetHash() == RETURN_OK)
-    {
-      NonAdded_OriginalCubeTextures.Remove(pTexture);
-      OriginalCubeTextures.Add( pTexture); // add the texture to the list of original texture
-      LookUpToMod(pTexture); // check if this texture should be modded
-    }
-  }
   Message("uMod_TextureClient_DX9::CheckAgainNonAdded() END: %p\n", this);
   return (RETURN_OK);
 }
@@ -184,78 +113,6 @@ int uMod_TextureClient_DX9::RemoveTexture( uMod_IDirect3DTexture9* pTexture) // 
   {
     if (int ret = OriginalTextures.Remove( pTexture)) return (ret); // remove this texture form the original list
     return (NonAdded_OriginalTextures.Remove( pTexture)); // also try to remove this texture form the non_added list
-  }
-  return (RETURN_OK);
-}
-
-int uMod_TextureClient_DX9::RemoveTexture( uMod_IDirect3DVolumeTexture9* pTexture) // is called from a texture, if it is finally released
-{
-  Message("uMod_TextureClient_DX9::RemoveTexture( Volume %p, %#llX): %p\n", pTexture, pTexture->CRC64, this);
-
-  if (gl_ErrorState & uMod_ERROR_FATAL) return (RETURN_FATAL_ERROR);
-  if (pTexture->FAKE)
-  {
-    // we need to set the corresponding FileToMod[X].pTexture to NULL, to avoid a link to a non existing texture object
-    int ref = pTexture->Reference;
-    if (ref>=0 && ref<NumberToMod)
-    {
-      for (int i=0; i<FileToMod[ref].NumberOfTextures; i++) if (FileToMod[ref].Textures[i] == pTexture)
-      {
-        FileToMod[ref].NumberOfTextures--;
-        for (int j=i; j<FileToMod[ref].NumberOfTextures; j++) FileToMod[ref].Textures[j] = FileToMod[ref].Textures[j+1];
-        FileToMod[ref].Textures[FileToMod[ref].NumberOfTextures] = NULL;
-        break;
-      }
-	  if (FileToMod[ref].NumberOfTextures == 0)
-	  {
-		  if (FileToMod[ref].pData)
-		  {
-			  delete[] FileToMod[ref].pData;
-			  FileToMod[ref].pData = NULL;
-		  }
-	  }
-	}
-  }
-  else
-  {
-    if (int ret = OriginalVolumeTextures.Remove( pTexture)) return (ret); // remove this texture form the original list
-    return (NonAdded_OriginalVolumeTextures.Remove( pTexture)); // also try to remove this texture form the non_added list
-  }
-  return (RETURN_OK);
-}
-
-int uMod_TextureClient_DX9::RemoveTexture( uMod_IDirect3DCubeTexture9* pTexture) // is called from a texture, if it is finally released
-{
-  Message("uMod_TextureClient_DX9::RemoveTexture( Cube %p, %#llX): %p\n", pTexture, pTexture->CRC64, this);
-
-  if (gl_ErrorState & uMod_ERROR_FATAL) return (RETURN_FATAL_ERROR);
-  if (pTexture->FAKE)
-  {
-    // we need to set the corresponding FileToMod[X].pTexture to NULL, to avoid a link to a non existing texture object
-    int ref = pTexture->Reference;
-    if (ref>=0 && ref<NumberToMod)
-    {
-      for (int i=0; i<FileToMod[ref].NumberOfTextures; i++) if (FileToMod[ref].Textures[i] == pTexture)
-      {
-        FileToMod[ref].NumberOfTextures--;
-        for (int j=i; j<FileToMod[ref].NumberOfTextures; j++) FileToMod[ref].Textures[j] = FileToMod[ref].Textures[j+1];
-        FileToMod[ref].Textures[FileToMod[ref].NumberOfTextures] = NULL;
-        break;
-      }
-	  if (FileToMod[ref].NumberOfTextures == 0)
-	  {
-		  if (FileToMod[ref].pData)
-		  {
-			  delete[] FileToMod[ref].pData;
-			  FileToMod[ref].pData = NULL;
-		  }
-	  }
-	}
-  }
-  else
-  {
-    if (int ret = OriginalCubeTextures.Remove( pTexture)) return (ret); // remove this texture form the original list
-    return (NonAdded_OriginalCubeTextures.Remove( pTexture)); // also try to remove this texture form the non_added list
   }
   return (RETURN_OK);
 }
@@ -341,45 +198,13 @@ int uMod_TextureClient_DX9::MergeUpdate(void)
             }
             case 0x01000001L:
             {
-              uMod_IDirect3DVolumeTexture9 *pTexture = (uMod_IDirect3DVolumeTexture9*) FileToMod[pos_old].Textures[i];//
-              uMod_IDirect3DVolumeTexture9 *pRefTexture = pTexture->CrossRef_D3Dtex;
-              pTexture->Release();
-              i--; //after the Release of the old fake texture FileToMod[pos_old].Textures[i] is overwritten by entries with index greater than i
-
-              uMod_IDirect3DVolumeTexture9 *fake_Texture;
-              if (int ret = LoadTexture( & (Update[pos_new]), &fake_Texture)) return (ret);
-              if (SwitchTextures( fake_Texture, pRefTexture))
-              {
-                Message("MergeUpdate(): textures not switched %#llX\n", pRefTexture->CRC64);
-                fake_Texture->Release();
-              }
-              else
-              {
-                Update[pos_new].Textures[Update[pos_new].NumberOfTextures++] = fake_Texture;
-                fake_Texture->Reference = pos_new;
-              }
-              break;
+				Message("MergeUpdate(): volume textures not implemented\n");
+                break;
             }
             case 0x01000002L:
             {
-              uMod_IDirect3DCubeTexture9 *pTexture = (uMod_IDirect3DCubeTexture9*) FileToMod[pos_old].Textures[i];//
-              uMod_IDirect3DCubeTexture9 *pRefTexture = pTexture->CrossRef_D3Dtex;
-              pTexture->Release();
-              i--; //after the Release of the old fake texture FileToMod[pos_old].Textures[i] is overwritten by entries with index greater than i
-
-              uMod_IDirect3DCubeTexture9 *fake_Texture;
-              if (int ret = LoadTexture( & (Update[pos_new]), &fake_Texture)) return (ret);
-              if (SwitchTextures( fake_Texture, pRefTexture))
-              {
-                Message("MergeUpdate(): textures not switched %#llX\n", pRefTexture->CRC64);
-                fake_Texture->Release();
-              }
-              else
-              {
-                Update[pos_new].Textures[Update[pos_new].NumberOfTextures++] = fake_Texture;
-                fake_Texture->Reference = pos_new;
-              }
-              break;
+				Message("MergeUpdate(): cube textures not implemented\n");
+				break;
             }
             default:
               break; // this is no fake texture and QueryInterface failed, because IDirect3DBaseTexture9 object cannot be a IDirect3D9 object ;)
@@ -437,24 +262,6 @@ int uMod_TextureClient_DX9::MergeUpdate(void)
       UnswitchTextures(OriginalTextures[i]); //this we can do always, so we unswitch the single texture
       LookUpToMod( OriginalTextures[i], num_to_lookup, to_lookup);
     }
-
-    uMod_IDirect3DVolumeTexture9 *single_volume_texture;
-    single_volume_texture = ((uMod_IDirect3DDevice9*)D3D9Device)->GetSingleVolumeTexture(); //this texture must no be added twice
-    num = OriginalVolumeTextures.GetNumber();
-    for (int i=0; i<num; i++) if (OriginalVolumeTextures[i]->CrossRef_D3Dtex==NULL || OriginalVolumeTextures[i]->CrossRef_D3Dtex==single_volume_texture)
-    {
-      UnswitchTextures(OriginalVolumeTextures[i]); //this we can do always, so we unswitch the single texture
-      LookUpToMod( OriginalVolumeTextures[i], num_to_lookup, to_lookup);
-    }
-
-    uMod_IDirect3DCubeTexture9 *single_cube_texture;
-    single_cube_texture = ((uMod_IDirect3DDevice9*)D3D9Device)->GetSingleCubeTexture(); //this texture must no be added twice
-    num = OriginalCubeTextures.GetNumber();
-    for (int i=0; i<num; i++) if (OriginalCubeTextures[i]->CrossRef_D3Dtex==NULL || OriginalCubeTextures[i]->CrossRef_D3Dtex==single_cube_texture)
-    {
-      UnswitchTextures(OriginalCubeTextures[i]); //this we can do always, so we unswitch the single texture
-      LookUpToMod( OriginalCubeTextures[i], num_to_lookup, to_lookup);
-    }
   }
 
 
@@ -497,65 +304,6 @@ int uMod_TextureClient_DX9::LookUpToMod( uMod_IDirect3DTexture9* pTexture, int n
   }
   return (RETURN_OK);
 }
-
-int uMod_TextureClient_DX9::LookUpToMod( uMod_IDirect3DVolumeTexture9* pTexture, int num_index_list, int *index_list) // should only be called for original textures
-{
-  Message("uMod_TextureClient_DX9::LookUpToMod( Volume %p): hash: %#llX,  %p\n", pTexture, pTexture->CRC64, this);
-  if (pTexture->CrossRef_D3Dtex!=NULL) return (RETURN_OK); // bug, this texture is already switched
-  int index = GetIndex( pTexture->CRC64, num_index_list, index_list);
-  if (index>=0)
-  {
-    uMod_IDirect3DVolumeTexture9 *fake_Texture;
-    if (int ret = LoadTexture( & (FileToMod[index]), &fake_Texture)) return (ret);
-    if (SwitchTextures( fake_Texture, pTexture))
-    {
-      Message("uMod_TextureClient_DX9::LookUpToMod(): textures not switched %#llX\n", FileToMod[index].Hash);
-      fake_Texture->Release();
-    }
-    else
-    {
-      IDirect3DBaseTexture9 **temp = new IDirect3DBaseTexture9*[FileToMod[index].NumberOfTextures+1];
-      for (int j=0; j<FileToMod[index].NumberOfTextures; j++) temp[j] =  (IDirect3DBaseTexture9*) FileToMod[index].Textures[j];
-
-      if (FileToMod[index].Textures!=NULL) delete [] FileToMod[index].Textures;
-      FileToMod[index].Textures = (void**) temp;
-
-      FileToMod[index].Textures[FileToMod[index].NumberOfTextures++] = fake_Texture;
-      fake_Texture->Reference = index;
-    }
-  }
-  return (RETURN_OK);
-}
-
-int uMod_TextureClient_DX9::LookUpToMod( uMod_IDirect3DCubeTexture9* pTexture, int num_index_list, int *index_list) // should only be called for original textures
-{
-  Message("uMod_TextureClient_DX9::LookUpToMod( Cube %p): hash: %#llX,  %p\n", pTexture, pTexture->CRC64, this);
-  if (pTexture->CrossRef_D3Dtex!=NULL) return (RETURN_OK); // bug, this texture is already switched
-  int index = GetIndex( pTexture->CRC64, num_index_list, index_list);
-  if (index>=0)
-  {
-    uMod_IDirect3DCubeTexture9 *fake_Texture;
-    if (int ret = LoadTexture( & (FileToMod[index]), &fake_Texture)) return (ret);
-    if (SwitchTextures( fake_Texture, pTexture))
-    {
-      Message("uMod_TextureClient_DX9::LookUpToMod(): textures not switched %#llX\n", FileToMod[index].Hash);
-      fake_Texture->Release();
-    }
-    else
-    {
-      IDirect3DBaseTexture9 **temp = new IDirect3DBaseTexture9*[FileToMod[index].NumberOfTextures+1];
-      for (int j=0; j<FileToMod[index].NumberOfTextures; j++) temp[j] =  (IDirect3DBaseTexture9*) FileToMod[index].Textures[j];
-
-      if (FileToMod[index].Textures!=NULL) delete [] FileToMod[index].Textures;
-      FileToMod[index].Textures = (void**) temp;
-
-      FileToMod[index].Textures[FileToMod[index].NumberOfTextures++] = fake_Texture;
-      fake_Texture->Reference = index;
-    }
-  }
-  return (RETURN_OK);
-}
-
 
 int uMod_TextureClient_DX9::LoadFile(char *path, char **buffer, UINT64 size)
 {
@@ -608,53 +356,3 @@ int uMod_TextureClient_DX9::LoadTexture( TextureFileStruct* file_in_memory, uMod
   Message("LoadTexture( %p, %#llX): DONE\n", *ppTexture, file_in_memory->Hash);
   return (RETURN_OK);
 }
-
-int uMod_TextureClient_DX9::LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DVolumeTexture9 **ppTexture) // to load fake texture from a file in memory
-{
-  Message("LoadTexture( Volume %s, %p, %#llX): %p\n", file_in_memory->filePath, ppTexture, file_in_memory->Hash, this);
-  if (RETURN_OK != LoadFile(file_in_memory->filePath, &file_in_memory->pData, file_in_memory->Size))
-  {
-	  *ppTexture = NULL;
-	  return (RETURN_TEXTURE_NOT_LOADED);
-  }
-  if (D3D_OK != D3DXCreateVolumeTextureFromFileInMemoryEx( D3D9Device, file_in_memory->pData, file_in_memory->Size, D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (IDirect3DVolumeTexture9 **) ppTexture))
-  {
-    *ppTexture=NULL;
-	delete[] file_in_memory->pData;
-	file_in_memory->pData = NULL;
-	return (RETURN_TEXTURE_NOT_LOADED);
-  }
-  (*ppTexture)->FAKE = true;
-
-  ((uMod_IDirect3DDevice9*)D3D9Device)->SetLastCreatedVolumeTexture(NULL); //this texture must no be added twice
-
-  Message("LoadTexture( Volume %p, %#llX): DONE\n", *ppTexture, file_in_memory->Hash);
-  return (RETURN_OK);
-}
-
-int uMod_TextureClient_DX9::LoadTexture( TextureFileStruct* file_in_memory, uMod_IDirect3DCubeTexture9 **ppTexture) // to load fake texture from a file in memory
-{
-  Message("LoadTexture( Cube %s, %p, %#llX): %p\n", file_in_memory->filePath, ppTexture, file_in_memory->Hash, this);
-  if (RETURN_OK != LoadFile(file_in_memory->filePath, &file_in_memory->pData, file_in_memory->Size))
-  {
-	  *ppTexture = NULL;
-	  return (RETURN_TEXTURE_NOT_LOADED);
-  }
-  if (D3D_OK != D3DXCreateCubeTextureFromFileInMemoryEx( D3D9Device, file_in_memory->pData, file_in_memory->Size, D3DX_DEFAULT, D3DX_DEFAULT, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, NULL, NULL, (IDirect3DCubeTexture9 **) ppTexture))
-  {
-    *ppTexture=NULL;
-	delete[] file_in_memory->pData;
-	file_in_memory->pData = NULL;
-    return (RETURN_TEXTURE_NOT_LOADED);
-  }
-  (*ppTexture)->FAKE = true;
-
-  ((uMod_IDirect3DDevice9*)D3D9Device)->SetLastCreatedCubeTexture(NULL); //this texture must no be added twice
-
-  Message("LoadTexture( Cube %p, %#llX): DONE\n", *ppTexture, file_in_memory->Hash);
-  return (RETURN_OK);
-}
-
-
-
-

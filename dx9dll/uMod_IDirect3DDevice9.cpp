@@ -20,6 +20,7 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 
 #include "uMod_Main.h"
 #include "uMod_IDirect3DDevice9.h"
+#include <crtdbg.h>
 
 #ifndef RETURN_QueryInterface
 #define RETURN_QueryInterface 0x01000000L
@@ -208,14 +209,10 @@ uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_
   uMod_Client->ConnectToServer( uMod_Server);
 
   LastCreatedTexture = NULL;
-  LastCreatedVolumeTexture = NULL;
-  LastCreatedCubeTexture = NULL;
-	m_pIDirect3DDevice9 = pOriginal; // store the pointer to original object
+  m_pIDirect3DDevice9 = pOriginal; // store the pointer to original object
 
   SingleTextureMod = 0;
   SingleTexture = NULL;
-  SingleVolumeTexture = NULL;
-  SingleCubeTexture = NULL;
 
   uMod_Reference = 1;
 }
@@ -263,15 +260,11 @@ ULONG uMod_IDirect3DDevice9::Release(void)
     // and the target textures are released by the game.
 
     if (SingleTexture!=NULL) SingleTexture->Release(); //this is the only texture we must release by ourself
-    if (SingleVolumeTexture!=NULL) SingleVolumeTexture->Release(); //this is the only texture we must release by ourself
-    if (SingleCubeTexture!=NULL) SingleCubeTexture->Release(); //this is the only texture we must release by ourself
 
     if (uMod_Client!=NULL) delete uMod_Client; //must be deleted at the end, because other releases might call a function of this object
 
     uMod_Client = NULL;
     SingleTexture = NULL;
-    SingleVolumeTexture = NULL;
-    SingleCubeTexture = NULL;
   }
 
 	ULONG count = m_pIDirect3DDevice9->Release();
@@ -406,40 +399,16 @@ HRESULT uMod_IDirect3DDevice9::CreateTexture(UINT Width,UINT Height,UINT Levels,
 
 HRESULT uMod_IDirect3DDevice9::CreateVolumeTexture(UINT Width,UINT Height,UINT Depth,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DVolumeTexture9** ppVolumeTexture,HANDLE* pSharedHandle)
 {
-  //create real texture
-  //Message("uMod_IDirect3DDevice9::CreateVolumeTexture()\n");
-  HRESULT ret = (m_pIDirect3DDevice9->CreateVolumeTexture(Width,Height,Depth, Levels,Usage,Format,Pool,ppVolumeTexture,pSharedHandle));
-  if(ret != D3D_OK) return (ret);
-
-  //create fake texture
-  uMod_IDirect3DVolumeTexture9 *texture  = new uMod_IDirect3DVolumeTexture9( ppVolumeTexture, this);
-  if (texture) *ppVolumeTexture = texture;
-
-  if (LastCreatedVolumeTexture!=NULL) //if a texture was loaded before, hopefully this texture contains now the data, so we can add it
-  {
-    if ( uMod_Client!=NULL) uMod_Client->AddTexture( LastCreatedVolumeTexture);
-  }
-  LastCreatedVolumeTexture = texture;
-  return (ret);
+  Message("uMod_IDirect3DDevice9::CreateVolumeTexture(): volume textures not implemented\n");
+  _ASSERT(0);
+  return (D3D_OK);
 }
 
 HRESULT uMod_IDirect3DDevice9::CreateCubeTexture(UINT EdgeLength,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DCubeTexture9** ppCubeTexture,HANDLE* pSharedHandle)
 {
-  //create real texture
-  //Message("uMod_IDirect3DDevice9::CreateCubeTexture()\n");
-  HRESULT ret = (m_pIDirect3DDevice9->CreateCubeTexture(EdgeLength, Levels,Usage,Format,Pool,ppCubeTexture,pSharedHandle));
-  if(ret != D3D_OK) return (ret);
-
-  //create fake texture
-  uMod_IDirect3DCubeTexture9 *texture  = new uMod_IDirect3DCubeTexture9( ppCubeTexture, this);
-  if (texture) *ppCubeTexture = texture;
-
-  if (LastCreatedCubeTexture!=NULL) //if a texture was loaded before, hopefully this texture contains now the data, so we can add it
-  {
-    if ( uMod_Client!=NULL) uMod_Client->AddTexture( LastCreatedCubeTexture);
-  }
-  LastCreatedCubeTexture = texture;
-  return (ret);
+	Message("uMod_IDirect3DDevice9::CreateCubeTexture(): cube textures not implemented\n");
+	_ASSERT(0);
+	return (D3D_OK);
 }
 
 HRESULT uMod_IDirect3DDevice9::CreateVertexBuffer(UINT Length,DWORD Usage,DWORD FVF,D3DPOOL Pool,IDirect3DVertexBuffer9** ppVertexBuffer,HANDLE* pSharedHandle)
@@ -474,8 +443,6 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
 
 
   uMod_IDirect3DTexture9* pSource = NULL;
-  uMod_IDirect3DVolumeTexture9* pSourceVolume = NULL;
-  uMod_IDirect3DCubeTexture9* pSourceCube = NULL;
   IDirect3DBaseTexture9* cpy;
   if( pSourceTexture != NULL )
   {
@@ -504,43 +471,15 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
       }
       case 0x01000001L:
       {
-        pSourceVolume = (uMod_IDirect3DVolumeTexture9*)(pSourceTexture);
-        DWORD64 crc64 = pSourceVolume->CRC64;
-        if (pSourceVolume->ComputetHash() == RETURN_OK)
-        {
-          if (crc64 != pSourceVolume->CRC64 ) // this hash has changed !!
-          {
-            pSourceVolume->CRC64 = crc64;
-            if (pSourceVolume->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSourceVolume);
-            if ( uMod_Client!=NULL) uMod_Client->LookUpToMod( pSourceVolume);
-          }
-        }
-        else if (pSourceVolume->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSourceVolume); // we better unswitch
-
-        // the source must be the original texture if not switched and the fake texture if it is switched
-        if (pSourceVolume->CrossRef_D3Dtex!=NULL) pSourceTexture = pSourceVolume->CrossRef_D3Dtex->m_D3Dtex;
-        else pSourceTexture = pSourceVolume->m_D3Dtex;
+		  Message("uMod_IDirect3DDevice9::UpdateTexture(): volume textures not implemented\n");
+		  _ASSERT(0);
         break;
       }
       case 0x01000002L:
       {
-        pSourceCube = (uMod_IDirect3DCubeTexture9*)(pSourceTexture);
-        DWORD64 crc64 = pSourceCube->CRC64;
-        if (pSourceCube->ComputetHash() == RETURN_OK)
-        {
-          if (crc64 != pSourceCube->CRC64) // this hash has changed !!
-          {
-            pSourceCube->CRC64 = crc64;
-            if (pSourceCube->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSourceCube);
-            if ( uMod_Client!=NULL) uMod_Client->LookUpToMod( pSourceCube);
-          }
-        }
-        else if (pSourceCube->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSourceCube); // we better unswitch
-
-        // the source must be the original texture if not switched and the fake texture if it is switched
-        if (pSourceCube->CrossRef_D3Dtex!=NULL) pSourceTexture = pSourceCube->CrossRef_D3Dtex->m_D3Dtex;
-        else pSourceTexture = pSourceCube->m_D3Dtex;
-        break;
+		  Message("uMod_IDirect3DDevice9::UpdateTexture(): cube textures not implemented\n");
+		  _ASSERT(0);
+		  break;
       }
       default:
         break; // this is no fake texture and QueryInterface failed, because IDirect3DBaseTexture9 object cannot be a IDirect3D9 object ;)
@@ -574,41 +513,15 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
       }
       case 0x01000001L:
       {
-        uMod_IDirect3DVolumeTexture9* pDest = (uMod_IDirect3DVolumeTexture9*)(pDestinationTexture);
-
-        if (pSourceVolume!=NULL && pDest->CRC64!=pSourceVolume->CRC64)
-        {
-          pDest->CRC64 = pSourceVolume->CRC64; // take over the hash
-          UnswitchTextures(pDest);
-          if (pSourceVolume->CrossRef_D3Dtex!=NULL)
-          {
-            uMod_IDirect3DVolumeTexture9 *cpy = pSourceVolume->CrossRef_D3Dtex;
-            UnswitchTextures(pSourceVolume);
-            SwitchTextures( cpy, pDest);
-          }
-        }
-        if (pDest->CrossRef_D3Dtex!=NULL) pDestinationTexture = pDest->CrossRef_D3Dtex->m_D3Dtex; // make sure to copy into the original texture
-        else pDestinationTexture = pDest->m_D3Dtex;
-        break;
+		  Message("uMod_IDirect3DDevice9::UpdateTexture(): volume textures not implemented\n");
+		  _ASSERT(0);
+		  break;
       }
       case 0x01000002L:
       {
-        uMod_IDirect3DCubeTexture9* pDest = (uMod_IDirect3DCubeTexture9*)(pDestinationTexture);
-
-        if (pSourceCube!=NULL && pDest->CRC64!=pSourceCube->CRC64)
-        {
-          pDest->CRC64 = pSourceCube->CRC64; // take over the hash
-          UnswitchTextures(pDest);
-          if (pSourceCube->CrossRef_D3Dtex!=NULL)
-          {
-            uMod_IDirect3DCubeTexture9 *cpy = pSourceCube->CrossRef_D3Dtex;
-            UnswitchTextures(pSourceCube);
-            SwitchTextures( cpy, pDest);
-          }
-        }
-        if (pDest->CrossRef_D3Dtex!=NULL) pDestinationTexture = pDest->CrossRef_D3Dtex->m_D3Dtex; // make sure to copy into the original texture
-        else pDestinationTexture = pDest->m_D3Dtex;
-        break;
+		  Message("uMod_IDirect3DDevice9::UpdateTexture(): cube textures not implemented\n");
+		  _ASSERT(0);
+		  break;
       }
       default:
         break; // this is no fake texture and QueryInterface failed, because IDirect3DBaseTexture9 object cannot be a IDirect3D9 object ;)
@@ -679,14 +592,6 @@ HRESULT uMod_IDirect3DDevice9::BeginScene(void)
     if (LastCreatedTexture!=NULL) // add the last created texture
     {
       uMod_Client->AddTexture( LastCreatedTexture);
-    }
-    if (LastCreatedVolumeTexture!=NULL) // add the last created texture
-    {
-      uMod_Client->AddTexture( LastCreatedVolumeTexture);
-    }
-    if (LastCreatedCubeTexture!=NULL) // add the last created texture
-    {
-      uMod_Client->AddTexture( LastCreatedCubeTexture);
     }
     uMod_Client->MergeUpdate(); // merge an update, if present
 
@@ -824,9 +729,13 @@ HRESULT uMod_IDirect3DDevice9::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pT
 	    case 0x01000000L:
 	      pTexture = ((uMod_IDirect3DTexture9*)(pTexture))->m_D3Dtex; break;
       case 0x01000001L:
-        pTexture = ((uMod_IDirect3DVolumeTexture9*)(pTexture))->m_D3Dtex; break;
-      case 0x01000002L:
-        pTexture = ((uMod_IDirect3DCubeTexture9*)(pTexture))->m_D3Dtex; break;
+		  Message("uMod_IDirect3DDevice9::SetTexture(): volume textures not implemented\n");
+		  _ASSERT(0);
+		  break;
+	  case 0x01000002L:
+		  Message("uMod_IDirect3DDevice9::SetTexture(): cube textures not implemented\n");
+		  _ASSERT(0);
+		  break;
 	    default:
 	      break; // this is no fake texture and QueryInterface failed, because IDirect3DBaseTexture9 object cannot be a IDirect3D9 object ;)
 	  }
