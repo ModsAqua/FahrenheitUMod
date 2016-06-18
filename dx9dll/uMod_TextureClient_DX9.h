@@ -55,11 +55,6 @@ public:
    */
   int RemoveTexture( uMod_IDirect3DTexture9* tex);
 
-
-  int MergeUpdate(void); //called from uMod_IDirect3DDevice9::BeginScene()
-
-
-
   int LookUpToMod( uMod_IDirect3DTexture9* pTexture, int num_index_list=0, int *index_list=(int*)0); // called at the end AddTexture(...) and from Device->UpdateTexture(...)
 
   uMod_TextureHandler<uMod_IDirect3DTexture9> OriginalTextures; // stores the pointer to the uMod_IDirect3DTexture9 objects created by the game

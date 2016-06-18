@@ -201,9 +201,6 @@ uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_
 {
   Message( PRE_MESSAGE "::" PRE_MESSAGE  "( %lu, %lu): %lu\n", pOriginal, server, this);
 
-  BackBufferCount = back_buffer_count;
-  NormalRendering = true;
-
   uMod_Server = server;
   uMod_Client = new uMod_TextureClient_DX9( this, DEF_DX_VERSION); //get a new texture client for this device
   uMod_Client->ConnectToServer( uMod_Server);
@@ -441,93 +438,10 @@ HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
   Message( PRE_MESSAGE "::UpdateTexture( %lu, %lu): %lu\n", pSourceTexture, pDestinationTexture, this);
   // we must pass the real texture objects
 
-
-  uMod_IDirect3DTexture9* pSource = NULL;
-  IDirect3DBaseTexture9* cpy;
-  if( pSourceTexture != NULL )
-  {
-    long int ret = pSourceTexture->QueryInterface( IID_IDirect3D9, (void**) &cpy);
-    switch (ret)
-    {
-      case 0x01000000L:
-      {
-        pSource = (uMod_IDirect3DTexture9*)(pSourceTexture);
-        DWORD64 crc64 = pSource->CRC64;
-        if (pSource->ComputetHash() == RETURN_OK)
-        {
-          if (crc64 != pSource->CRC64 ) // this hash has changed !!
-          {
-            pSource->CRC64 = crc64;
-            if (pSource->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSource);
-            if ( uMod_Client!=NULL) uMod_Client->LookUpToMod( pSource);
-          }
-        }
-        else if (pSource->CrossRef_D3Dtex!=NULL) UnswitchTextures(pSource); // we better unswitch
-
-        // the source must be the original texture if not switched and the fake texture if it is switched
-        if (pSource->CrossRef_D3Dtex!=NULL) pSourceTexture = pSource->CrossRef_D3Dtex->m_D3Dtex;
-        else pSourceTexture = pSource->m_D3Dtex;
-        break;
-      }
-      case 0x01000001L:
-      {
-		  Message("uMod_IDirect3DDevice9::UpdateTexture(): volume textures not implemented\n");
-		  _ASSERT(0);
-        break;
-      }
-      case 0x01000002L:
-      {
-		  Message("uMod_IDirect3DDevice9::UpdateTexture(): cube textures not implemented\n");
-		  _ASSERT(0);
-		  break;
-      }
-      default:
-        break; // this is no fake texture and QueryInterface failed, because IDirect3DBaseTexture9 object cannot be a IDirect3D9 object ;)
-    }
-  }
-
-
-  if (pDestinationTexture != NULL)
-  {
-    long int ret = pDestinationTexture->QueryInterface( IID_IDirect3D9, (void**) &cpy);
-    switch (ret)
-    {
-      case 0x01000000L:
-      {
-        uMod_IDirect3DTexture9* pDest = (uMod_IDirect3DTexture9*)(pDestinationTexture);
-
-        if (pSource!=NULL && pDest->CRC64!=pSource->CRC64)
-        {
-          pDest->CRC64 = pSource->CRC64; // take over the hash
-          UnswitchTextures(pDest);
-          if (pSource->CrossRef_D3Dtex!=NULL)
-          {
-            uMod_IDirect3DTexture9 *cpy = pSource->CrossRef_D3Dtex;
-            UnswitchTextures(pSource);
-            SwitchTextures( cpy, pDest);
-          }
-        }
-        if (pDest->CrossRef_D3Dtex!=NULL) pDestinationTexture = pDest->CrossRef_D3Dtex->m_D3Dtex; // make sure to copy into the original texture
-        else pDestinationTexture = pDest->m_D3Dtex;
-        break;
-      }
-      case 0x01000001L:
-      {
-		  Message("uMod_IDirect3DDevice9::UpdateTexture(): volume textures not implemented\n");
-		  _ASSERT(0);
-		  break;
-      }
-      case 0x01000002L:
-      {
-		  Message("uMod_IDirect3DDevice9::UpdateTexture(): cube textures not implemented\n");
-		  _ASSERT(0);
-		  break;
-      }
-      default:
-        break; // this is no fake texture and QueryInterface failed, because IDirect3DBaseTexture9 object cannot be a IDirect3D9 object ;)
-    }
-  }
-	return(m_pIDirect3DDevice9->UpdateTexture(pSourceTexture,pDestinationTexture));
+  Message("uMod_IDirect3DDevice9::UpdateTexture(): cube textures not implemented\n");
+  _ASSERT(0);
+  return D3D_OK;
+//	return(m_pIDirect3DDevice9->UpdateTexture(pSourceTexture,pDestinationTexture));
 }
 
 HRESULT uMod_IDirect3DDevice9::GetRenderTargetData(IDirect3DSurface9* pRenderTarget,IDirect3DSurface9* pDestSurface)
@@ -557,16 +471,6 @@ HRESULT uMod_IDirect3DDevice9::CreateOffscreenPlainSurface(UINT Width,UINT Heigh
 
 HRESULT uMod_IDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex,IDirect3DSurface9* pRenderTarget)
 {
-  {
-    IDirect3DSurface9 *back_buffer;
-    NormalRendering = false;
-    for (int i=0; !NormalRendering && i<BackBufferCount; i++)
-    {
-      m_pIDirect3DDevice9->GetBackBuffer( 0, i, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
-      if (back_buffer == pRenderTarget) NormalRendering = true;
-      back_buffer->Release();
-    }
-  }
   return (m_pIDirect3DDevice9->SetRenderTarget(RenderTargetIndex,pRenderTarget));
 }
 
@@ -593,14 +497,12 @@ HRESULT uMod_IDirect3DDevice9::BeginScene(void)
     {
       uMod_Client->AddTexture( LastCreatedTexture);
     }
-    uMod_Client->MergeUpdate(); // merge an update, if present
 
     if (uMod_Client->Bool_CheckAgainNonAdded) uMod_Client->CheckAgainNonAdded();
   }
 
   return (m_pIDirect3DDevice9->BeginScene());
 }
-
 
 HRESULT uMod_IDirect3DDevice9::EndScene(void)
 {
@@ -1007,5 +909,3 @@ HRESULT uMod_IDirect3DDevice9::CreateQuery(D3DQUERYTYPE Type,IDirect3DQuery9** p
 {
   return(m_pIDirect3DDevice9->CreateQuery(Type,ppQuery));
 }
-
-

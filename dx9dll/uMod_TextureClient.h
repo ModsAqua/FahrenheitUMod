@@ -54,14 +54,6 @@ public:
    */
   int AddUpdate(TextureFileStruct* update, int number);
 
-
-  /**
-   * Merge the latest update (called from client -> e.g. uMod_IDirect3DDevice9::BeginScene())
-   * @return RETURN_OK on success
-   */
-  virtual int MergeUpdate(void) = 0;
-
-
   const int Version;
   uMod_TextureServer* Server; //!< Pointer to the server
 

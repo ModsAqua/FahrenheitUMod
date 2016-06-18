@@ -180,9 +180,6 @@ public:
   uMod_IDirect3DTexture9* SingleTexture;
   char SingleTextureMod;
 
-  int BackBufferCount;
-  bool NormalRendering;
-
   int uMod_Reference;
 
   uMod_IDirect3DTexture9* LastCreatedTexture;
