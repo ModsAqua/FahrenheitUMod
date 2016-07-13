@@ -32,12 +32,16 @@ along with Universal Modding Engine.  If not, see <http://www.gnu.org/licenses/>
 #include "uMod_TextureClient_DX9.h"
 #include "uMod_IDirect3DTexture9.h"
 
+#include "Effects/FXAA.h"
+#include "Effects/GAUSS.h"
+#include "Effects/FilmGrain.h"
+
 class uMod_TextureClient_DX9;
 
 class uMod_IDirect3DDevice9 : public IDirect3DDevice9
 {
 public:
-	uMod_IDirect3DDevice9(IDirect3DDevice9* pOriginal, uMod_TextureServer* server, int back_buffer_count);
+	uMod_IDirect3DDevice9(IDirect3DDevice9* pOriginal, uMod_TextureServer* server, D3DPRESENT_PARAMETERS* pPresentationParameters, int back_buffer_count);
 	virtual ~uMod_IDirect3DDevice9(void);
 
 	// START: The original DX9 function definitions
@@ -173,6 +177,11 @@ public:
 
   int ComputetHash( DWORD64 &CRC64, IDirect3DSurface9 *surface);
 
+  // SweetFX - start
+  bool UseSwpChPresentSFX;
+  void AddSFXInject(IDirect3DSurface9 *surface);
+  // SweetFX - end
+
  private:
 	int CreateSingleTexture(void);
   IDirect3DDevice9* m_pIDirect3DDevice9;
@@ -186,6 +195,28 @@ public:
 
   uMod_TextureServer* uMod_Server;
   uMod_TextureClient_DX9* uMod_Client;
+
+  // SweetFX - start
+  IDirect3DTexture9* rgbaBuffer1TexSFX;
+  IDirect3DSurface9* rgbaBuffer1SurfSFX;
+  IDirect3DTexture9* blurTexSFX;
+  IDirect3DSurface9* blurSurfSFX;
+  IDirect3DStateBlock9* prevStateBlockSFX;
+  D3DPRESENT_PARAMETERS presentParamsSFX;
+
+  bool SFXenabled, UseEndSceneSFX, UsePresentSFX;
+  FXAA*      fxaaSFX;
+  GAUSS*     gaussSFX;
+  FilmGrain *filmGrainSFX;
+  double CounterFreqSFX;
+  __int64 CounterStartSFX;
+
+  void ConstructorSFX(D3DPRESENT_PARAMETERS *pPresentParam);
+  void InitSFX();
+  void releaseSFXResources();
+  void StartCounterSFX();
+  double GetCounterSFX();
+  // SweetFX - end
 };
 
 #endif

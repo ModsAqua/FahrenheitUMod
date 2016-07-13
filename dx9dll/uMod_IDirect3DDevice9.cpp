@@ -188,7 +188,7 @@ int uMod_IDirect3DDevice9::ComputetHash( DWORD64 &CRC64, IDirect3DSurface9 *surf
   return (RETURN_OK);
 }
 
-uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_TextureServer* server, int back_buffer_count)
+uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_TextureServer* server, D3DPRESENT_PARAMETERS* pPresentationParameters, int back_buffer_count)
 {
   Message( PRE_MESSAGE "::" PRE_MESSAGE  "( %lu, %lu): %lu\n", pOriginal, server, this);
 
@@ -203,11 +203,15 @@ uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_
   SingleTexture = NULL;
 
   uMod_Reference = 1;
+
+  // SweetFX
+  ConstructorSFX(pPresentationParameters);
 }
 
 uMod_IDirect3DDevice9::~uMod_IDirect3DDevice9(void)
 {
   Message( PRE_MESSAGE "::~" PRE_MESSAGE "(): %lu\n", this);
+  releaseSFXResources();
 }
 
 HRESULT uMod_IDirect3DDevice9::QueryInterface(REFIID riid, void** ppvObj)
@@ -316,11 +320,6 @@ BOOL uMod_IDirect3DDevice9::ShowCursor(BOOL bShow)
   return(m_pIDirect3DDevice9->ShowCursor(bShow));
 }
 
-HRESULT uMod_IDirect3DDevice9::CreateAdditionalSwapChain(D3DPRESENT_PARAMETERS* pPresentationParameters,IDirect3DSwapChain9** pSwapChain)
-{
-  return(m_pIDirect3DDevice9->CreateAdditionalSwapChain(pPresentationParameters,pSwapChain));
-}
-
 HRESULT uMod_IDirect3DDevice9::GetSwapChain(UINT iSwapChain,IDirect3DSwapChain9** pSwapChain)
 {
   return(m_pIDirect3DDevice9->GetSwapChain(iSwapChain,pSwapChain));
@@ -329,16 +328,6 @@ HRESULT uMod_IDirect3DDevice9::GetSwapChain(UINT iSwapChain,IDirect3DSwapChain9*
 UINT uMod_IDirect3DDevice9::GetNumberOfSwapChains(void)
 {
   return(m_pIDirect3DDevice9->GetNumberOfSwapChains());
-}
-
-HRESULT uMod_IDirect3DDevice9::Reset(D3DPRESENT_PARAMETERS* pPresentationParameters)
-{
-  return(m_pIDirect3DDevice9->Reset(pPresentationParameters));
-}
-
-HRESULT uMod_IDirect3DDevice9::Present(CONST RECT* pSourceRect,CONST RECT* pDestRect,HWND hDestWindowOverride,CONST RGNDATA* pDirtyRegion)
-{
-	return (m_pIDirect3DDevice9->Present( pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion));
 }
 
 HRESULT uMod_IDirect3DDevice9::GetBackBuffer(UINT iSwapChain,UINT iBackBuffer,D3DBACKBUFFER_TYPE Type,IDirect3DSurface9** ppBackBuffer)
@@ -486,11 +475,6 @@ HRESULT uMod_IDirect3DDevice9::BeginScene(void)
   }
 
   return (m_pIDirect3DDevice9->BeginScene());
-}
-
-HRESULT uMod_IDirect3DDevice9::EndScene(void)
-{
-  return(m_pIDirect3DDevice9->EndScene());
 }
 
 HRESULT uMod_IDirect3DDevice9::Clear(DWORD Count,CONST D3DRECT* pRects,DWORD Flags,D3DCOLOR Color,float Z,DWORD Stencil)

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dx9dll\uMod_DX9_dll.cpp" />
+    <ClCompile Include="dx9dll\uMod_DXMain_dll.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3D9.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DDevice9.cpp" />
+    <ClCompile Include="dx9dll\uMod_IDirect3DTexture9.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureClient.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureClient_DX9.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureFunction.cpp" />
+    <ClCompile Include="dx9dll\uMod_TextureServer.cpp" />
+    <ClCompile Include="dx9dll\widescreenfix.cpp" />
+    <ClCompile Include="dx9dll\Effects\Effect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="dx9dll\Effects\FilmGrain.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="dx9dll\Effects\FXAA.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="dx9dll\Settings.cpp" />
+    <ClCompile Include="dx9dll\Effects\GAUSS.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dx9dll\uMod_ArrayHandler.h" />
+    <ClInclude Include="dx9dll\uMod_Defines.h" />
+    <ClInclude Include="dx9dll\uMod_DX9_dll.h" />
+    <ClInclude Include="dx9dll\uMod_DXMain_dll.h" />
+    <ClInclude Include="dx9dll\uMod_Error.h" />
+    <ClInclude Include="dx9dll\uMod_GlobalDefines.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3D9.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DDevice9.h" />
+    <ClInclude Include="dx9dll\uMod_IDirect3DTexture9.h" />
+    <ClInclude Include="dx9dll\uMod_Main.h" />
+    <ClInclude Include="dx9dll\uMod_TextureClient.h" />
+    <ClInclude Include="dx9dll\uMod_TextureClient_DX9.h" />
+    <ClInclude Include="dx9dll\uMod_TextureFunction.h" />
+    <ClInclude Include="dx9dll\uMod_TextureServer.h" />
+    <ClInclude Include="dx9dll\uMod_Utils.h" />
+    <ClInclude Include="dx9dll\Effects\Effect.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="dx9dll\Effects\FilmGrain.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="dx9dll\Effects\FXAA.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="dx9dll\Settings.h" />
+    <ClInclude Include="dx9dll\Effects\GAUSS.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dx9dll\uMod_DX9_dll.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Effects">
+      <UniqueIdentifier>{21521d50-49f7-4bd8-83ff-459ff4bc9781}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

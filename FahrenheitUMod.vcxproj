@@ -11,6 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dx9dll\Effects\Effect.h" />
+    <ClInclude Include="dx9dll\Effects\FilmGrain.h" />
+    <ClInclude Include="dx9dll\Effects\FXAA.h" />
+    <ClInclude Include="dx9dll\Effects\GAUSS.h" />
+    <ClInclude Include="dx9dll\ID3D9swapchain.h" />
+    <ClInclude Include="dx9dll\Settings.h" />
     <ClInclude Include="dx9dll\uMod_ArrayHandler.h" />
     <ClInclude Include="dx9dll\uMod_Defines.h" />
     <ClInclude Include="dx9dll\uMod_DX9_dll.h" />
@@ -28,6 +34,13 @@
     <ClInclude Include="dx9dll\uMod_Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dx9dll\Effects\Effect.cpp" />
+    <ClCompile Include="dx9dll\Effects\FilmGrain.cpp" />
+    <ClCompile Include="dx9dll\Effects\FXAA.cpp" />
+    <ClCompile Include="dx9dll\Effects\GAUSS.cpp" />
+    <ClCompile Include="dx9dll\ID3D9dev.cpp" />
+    <ClCompile Include="dx9dll\ID3D9swapchain.cpp" />
+    <ClCompile Include="dx9dll\Settings.cpp" />
     <ClCompile Include="dx9dll\uMod_DX9_dll.cpp" />
     <ClCompile Include="dx9dll\uMod_DXMain_dll.cpp" />
     <ClCompile Include="dx9dll\uMod_IDirect3D9.cpp" />
