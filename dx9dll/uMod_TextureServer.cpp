@@ -163,7 +163,7 @@ int uMod_TextureServer::AddFile( char* file_name, DWORD64 size, DWORD64 hash, bo
     temp->Reference = -1;
   }
 
-  strcpy((char *)&temp->filePath, file_name);
+  strcpy_s((char *)&temp->filePath, MAX_PATH, file_name);
 
   temp->pData = NULL;
   temp->Size = (unsigned int) size;
@@ -210,7 +210,7 @@ int uMod_TextureServer::PropagateUpdate(uMod_TextureClient* client) // called fr
 #define cpy_file_struct( a, b) \
 {  \
   a.ForceReload = b.ForceReload; \
-  strcpy(a.filePath, b.filePath); \
+  strcpy_s(a.filePath, MAX_PATH, b.filePath); \
   a.pData = b.pData; \
   a.Size = b.Size; \
   a.NumberOfTextures = b.NumberOfTextures; \
@@ -286,9 +286,9 @@ int uMod_TextureServer::MainLoop(void) // run as a separated thread
 	  return (RETURN_OK);
 
   do {
-	  texture_size = (ffd.nFileSizeHigh * (MAXDWORD + 1)) + ffd.nFileSizeLow;
-	  sprintf(texture_path, "textures\\%s", ffd.cFileName);
-	  sscanf(ffd.cFileName, "Indigo Prophecy_W%u_H%u_F%u_T_0X%llx", &width, &height, &format, &texture_hash);
+	  texture_size = (ffd.nFileSizeHigh * ((DWORD64)MAXDWORD + 1)) + ffd.nFileSizeLow;
+	  sprintf_s(texture_path, "textures\\%s", ffd.cFileName);
+	  sscanf_s(ffd.cFileName, "Indigo Prophecy_W%u_H%u_F%u_T_0X%llx", &width, &height, &format, &texture_hash);
 	  AddFile(texture_path, texture_size, texture_hash, true);
   } while (FindNextFile(file, &ffd) != 0);
 

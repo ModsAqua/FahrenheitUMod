@@ -151,11 +151,11 @@ int uMod_TextureClient_DX9::LoadFile(char *path, char **buffer, UINT64 size)
 	FILE *file;
 	int result = RETURN_TEXTURE_NOT_LOADED;
 
-	*buffer = new char[size];
+	*buffer = new char[(int)size];
 	if (*buffer == NULL)
 		return result;
 
-	file = fopen(path, "rb");
+	fopen_s(&file, path, "rb");
 	if (file == NULL)
 	{
 		Message("LoadFile( %s, %d) NOT found\n", path, size);
@@ -165,7 +165,7 @@ int uMod_TextureClient_DX9::LoadFile(char *path, char **buffer, UINT64 size)
 
 	Message("LoadFile( %s, %d) found\n", path, size);
 
-	if (fread(*buffer, 1, size, file) == size)
+	if (fread(*buffer, 1, (size_t)size, file) == size)
 		result = RETURN_OK;
 
 	fclose(file);
