@@ -188,15 +188,6 @@ int uMod_IDirect3DDevice9::ComputetHash( DWORD64 &CRC64, IDirect3DSurface9 *surf
   return (RETURN_OK);
 }
 
-
-
-
-
-
-
-
-
-
 uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_TextureServer* server, int back_buffer_count)
 {
   Message( PRE_MESSAGE "::" PRE_MESSAGE  "( %lu, %lu): %lu\n", pOriginal, server, this);
@@ -397,14 +388,12 @@ HRESULT uMod_IDirect3DDevice9::CreateTexture(UINT Width,UINT Height,UINT Levels,
 HRESULT uMod_IDirect3DDevice9::CreateVolumeTexture(UINT Width,UINT Height,UINT Depth,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DVolumeTexture9** ppVolumeTexture,HANDLE* pSharedHandle)
 {
   Message("uMod_IDirect3DDevice9::CreateVolumeTexture(): volume textures not implemented\n");
-  _ASSERT(0);
   return (D3D_OK);
 }
 
 HRESULT uMod_IDirect3DDevice9::CreateCubeTexture(UINT EdgeLength,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DCubeTexture9** ppCubeTexture,HANDLE* pSharedHandle)
 {
 	Message("uMod_IDirect3DDevice9::CreateCubeTexture(): cube textures not implemented\n");
-	_ASSERT(0);
 	return (D3D_OK);
 }
 
@@ -435,13 +424,8 @@ HRESULT uMod_IDirect3DDevice9::UpdateSurface(IDirect3DSurface9* pSourceSurface,C
 
 HRESULT uMod_IDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTexture,IDirect3DBaseTexture9* pDestinationTexture)
 {
-  Message( PRE_MESSAGE "::UpdateTexture( %lu, %lu): %lu\n", pSourceTexture, pDestinationTexture, this);
-  // we must pass the real texture objects
-
-  Message("uMod_IDirect3DDevice9::UpdateTexture(): cube textures not implemented\n");
-  _ASSERT(0);
+  Message("uMod_IDirect3DDevice9::UpdateTexture(): not implemented\n");
   return D3D_OK;
-//	return(m_pIDirect3DDevice9->UpdateTexture(pSourceTexture,pDestinationTexture));
 }
 
 HRESULT uMod_IDirect3DDevice9::GetRenderTargetData(IDirect3DSurface9* pRenderTarget,IDirect3DSurface9* pDestSurface)
