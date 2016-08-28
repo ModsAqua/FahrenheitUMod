@@ -205,13 +205,14 @@ uMod_IDirect3DDevice9::uMod_IDirect3DDevice9( IDirect3DDevice9* pOriginal, uMod_
   uMod_Reference = 1;
 
   // SweetFX
-  ConstructorSFX(pPresentationParameters);
+  //ConstructorSFX(pPresentationParameters);
 }
 
 uMod_IDirect3DDevice9::~uMod_IDirect3DDevice9(void)
 {
   Message( PRE_MESSAGE "::~" PRE_MESSAGE "(): %lu\n", this);
-  releaseSFXResources();
+  // SweetFX
+  //releaseSFXResources();
 }
 
 HRESULT uMod_IDirect3DDevice9::QueryInterface(REFIID riid, void** ppvObj)
